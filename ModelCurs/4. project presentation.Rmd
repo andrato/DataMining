@@ -1,0 +1,339 @@
+---
+title: "MATRICES AND ARRAYS"
+author: Team 1
+date: "\t `r format(Sys.time(), '%d %B %Y')`"
+output: slidy_presentation
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(include = TRUE, echo = TRUE)
+```
+
+## Structure
+
+**1. Defining a matrix**
+
+*a) using the matrix function*
+
+*b) by row-binding*
+
+*c) by column-binding*
+
+*d) accesing the matrix's dimensions*
+
+**2. Matrix subsetting**
+
+*a) positive subsetting*
+
+*b) negative subsetting*
+
+*c) overwriting specific elements*
+
+**3. Matrix operations**
+
+*a) the transpose*
+
+*b) the identity matrix*
+
+*c) scalar multiplication*
+
+*d) addition and substraction*
+
+*e) matrix multiplication*
+
+*f) the inverse of a matrix*
+
+**4. Multidimensional arrays**
+
+*a) definition*
+
+*b) subsetting an array*
+
+
+## 1. Defining a matrix 
+
+#### a) using the matrix function 
+
+```{r}
+( mymat <- matrix(data = 1:6 , nrow = 2, ncol = 3, byrow = TRUE,
+                  dimnames = list(c("r1", "r2"), c("c1", "c2", "c3"))) )
+```
+
+#### b) by row-binding vectors of the same type and size
+
+```{r}
+# example of a function whose main argument is dots-dots-dots (...)
+( mymat <- rbind(1:3, 4:6) )
+```
+
+#### c) by column-binding vectors of the same type and size 
+
+```{r}
+# another function whose main argument is dots-dots-dots (...)
+( mymat <- cbind(c(1, 4), c(2, 5), c(3, 6)) )
+```
+
+#### d) accesing the matrix's dimensions 
+
+```{r}
+dim(mymat) # vector of length 2 containing the no of rows & the no of columns in that order
+nrow(mymat) # no. of rows 
+ncol(mymat) # no. of columns
+dim(mymat)[2] # alternative for the no. of columns
+```
+
+## 2. Matrix subsetting 
+
+#### a) positive subsetting 
+
+* *an element* 
+
+```{r}
+(A <- matrix( c(0.3, 4.5, 55.3, 91, 0.1, 105.5, -4.2, 8.2, 27.9), nrow = 3, ncol = 3) )
+# single element extraction
+A[3, 2]
+```
+
+* *a column*
+
+```{r}
+# single column extraction
+A[,2]
+```
+
+* *a row*
+
+```{r}
+# single row extraction
+A[1,]
+```
+
+* *other combinations*
+
+```{r}
+# extracting rows 2 & 3 (in that order)
+A[2:3,]
+# extracting columns 3 & 1 (in that order)
+A[,c(3,1)]
+# extracting the corner elements of the matrix
+A[c(1, 3), c(1,3)]
+```
+
+* *the diagonal*
+
+```{r}
+# extracting the diagonal of a (possibly non-square) matrix
+diag(A)
+diag(rbind(1:3, 4:6))
+```
+
+## 2. Matrix subsetting (cont'd)
+
+#### b) negative subsetting 
+
+```{r}
+# leaving one column out
+A[,-2]
+# mixing negative & positive subsetting
+A[-1,3:2]
+# leaving out row 1 and column 2
+A[-1,-2]
+# omitting more than one column
+A[-1, -c(2, 3)]
+```
+
+### c)  overwriting / changing specific elements
+
+```{r}
+( B <- A )
+# overwriting the second row
+B[2,] <- 1:3
+B
+# overwriting specific elements
+B[c(1, 3), 2] <- 900
+B
+# replacing the third column with the third row
+B[,3] <- B[3,]
+B
+# replacing the corner elements of the matrix; 
+# notice the recycling behaviour
+B[c(1,3),c(1,3)] <- c(-7,7)
+B
+# ovewriting always takes place column-wise (column by column) 
+B[c(1,3), 2:1] <- c(65,-65,88,-88)
+B
+# replacing the diagonal
+diag(B) <- rep(0, times = 3)
+B
+```
+
+## 3. Matrix operations
+
+#### a) the transpose of a matrix 
+
+```{r}
+( A <- rbind(c(2, 5,2 ), c(6, 1, 4)) )
+# transposing once
+t(A)
+# transposing twice (gives back the original matrix)
+t(t(A))
+```
+
+#### b) the identity matrix 
+
+```{r}
+# notice how the same function "diag" gives different types of outputs
+# depending on the type of the argument
+( A <- diag(3) )
+```
+    
+#### c) scalar multiplication 
+
+```{r}
+( A <- rbind(c(2, 5, 2), c(6, 1, 4)) )
+a <- 2
+a*A
+```
+
+#### d) addition and substraction 
+
+```{r}
+( A <- cbind(c(2, 5, 2), c(6, 1, 4)) )
+( B <- cbind(c(-2, 3, 6), c(8.1, 8.2, -9.8)) )
+A + B
+A - B
+```
+
+## 3. Matrix operations (cont'd)
+
+#### e) matrix multiplication 
+
+* *remember, A\*B is defined only when* **ncol(A) = nrow(B)**
+
+```{r}
+( A <- rbind(c(2, 5, 2), c(6, 1, 4)) )
+dim(A)
+( B <- cbind(c(3, -1, 1), c(-3, 1, 5)) )
+dim(B)
+# both multiplications are possible: A*B
+A %*% B
+# both multiplications are possible: B*A
+B %*% A
+```
+
+#### f) the inverse of a matrix
+
+```{r}
+( A <- matrix(c(3, 4, 1, 2), 2, 2) )
+# "solve" gives the inverse of A
+solve(A)
+# checking the correctness of the result
+A %*% solve(A)
+solve(A) %*% A
+```
+
+## 4. Multidimensional arrays
+
+#### a) definition
+
+* *an array is the multidimensional analogue of the (2-dimensional) matrix*
+
+```{r}
+# a 3-dimensional array consisting of rows, columns and slices
+( AR <- array(data = 1:24, dim = c(3, 4, 2)) )
+# a 4-dimensional array consisting of rows, columns, slices and blocks
+( BR <- array(1:72, dim = c(3, 4, 2, 3)) )
+```
+    
+#### b) subsetting an array 
+
+```{r}
+# extracting all row 2 - slice 2 elements
+AR[2,,2]
+# extracting some specific elements
+AR[2,c(3,1),2]
+# extracting the first row of a 3D array
+AR[1,,]
+# extracting the element from the 2nd row, 1st column, 1st slice and 3rd block
+BR[2,1,1,3]
+# extracting all row 1 - block 1 elements
+BR[1,,,1]
+# extracting slice 2
+BR[,,2,]
+```
+
+## Exercise 1
+
+<center>
+![](D:/8. FMI/DM/teme/model de proiect/Exercise1.png)
+</center>
+
+
+```{r, eval = FALSE}
+# a.
+A <- matrix(c(4.3, 3.1, 8.2, 8.2, 3.2, 0.9, 1.6, 6.5), nrow = 4, ncol = 2, byrow = T) 
+# b.
+dim(A[-1,])
+# c.
+A[,2] <- sort(A[,2])
+# d.
+matrix(A[-4, -1])
+# e.
+B <- A[3:4, 1:2] 
+# f.
+A[c(4,1), c(2,1)] <- (-1/2) * diag(B)
+```
+
+## Exercise 2
+
+<center>
+![](D:/8. FMI/DM/teme/model de proiect/Exercise2.png)
+</center>
+
+
+```{r, eval = FALSE}
+# a.	
+A <- cbind(c(1, 2, 7), c(2, 4, 6))
+B <- cbind(c(10, 30, 50), c(20, 40, 60))
+2/7 * (A - B)
+
+# b.	   
+A <- matrix(c(1, 2, 7), 3, 1)
+B <- matrix(c(3, 4, 8), 3, 1)
+    # i.  no
+ncol(A) == nrow(B)
+    # ii.  yes
+ncol(t(A)) == nrow(B)
+t(A) %*% B
+    # iii. yes
+ncol(A) == nrow(t(A))
+ncol(t(B)) == nrow(A %*% t(A))
+t(B) %*% (A %*% t(A)) 
+    # iv. no
+ncol(A %*% t(A)) == nrow(t(B))
+    # v. yes  
+solve((B %*% t(B)) + (A %*% t(A)) - 100*diag(3))
+
+# c.	
+A <- diag(c(2, 3, 5, -1))
+solve(A) %*% A - diag(4) 
+```
+
+## Exercise 3
+
+<center>
+![](D:/8. FMI/DM/teme/model de proiect/Exercise3.png)
+</center>
+
+```{r, eval = FALSE}
+# a.	
+A <- array(dim = c(4,2,6), seq(from = 4.8, to = 0.1, length.out = 48)) 
+# b.	
+B <- A[c(4,1), 2,] 
+# c.	
+C <- array(dim = c(2, 2, 2, 3), rep(B[2,], times = 6)) 
+# d.	
+D <- A[,,-6] 
+# e.	
+D[c(2,4),2,c(1,3,5)]  <- -99
+```
