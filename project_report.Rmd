@@ -1,0 +1,655 @@
+---
+title: "LINEAR REGRESSION FROM SCRATCH"
+author:
+- name: Andra Tomi (Gr 405)
+- name: Adrian Apostol (Gr 405)
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output: 
+  html_document:
+    highlight: pygments
+---
+
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(include = TRUE, echo = TRUE)
+```
+
+## **1. Linear Regression**
+**Univariate linear regression/simple linear regression** is a linear regression with one variable x. It is an example of **supervised learning** where the output values are known in the training data. In simple linear regression, for each input is predicted a single output.\
+
+### a) Hypothesis Function
+**Multivariate linear regression/multiple linear regression** is a linear regression with many variables x.
+
+**The hypothesis function:**\
+<center>
+$RSS(w) = w_0 + w_1x_1 + ... +w_nx_n + \epsilon = \sum\limits_{j=0}^{n}(w_jx_j) + \epsilon$\
+<!-- A. Ghatak, Machine Learning with R -->
+</center>
+
+\
+<!-- 
+In statistics, ordinary least squares (OLS) is a type of linear least squares method for estimating the unknown parameters in a linear regression model. OLS chooses the parameters of a linear function of a set of explanatory variables by the principle of least squares: minimizing the sum of the squares of the differences between the observed dependent variable (values of the variable being observed) in the given dataset and those predicted by the linear function.
+
+Geometrically, this is seen as the sum of the squared distances, parallel to the axis of the dependent variable, between each data point in the set and the corresponding point on the regression surface—the smaller the differences, the better the model fits the data. The resulting estimator can be expressed by a simple formula, especially in the case of a simple linear regression, in which there is a single regressor on the right side of the regression equation.
+-->
+
+**Example of simple linear regression** as ordinary least squares (Fig.1.):
+<center>
+![](D:\MasterInfo\AN1-SEM1\DataMining\DataMining\Images\4.1.png)\
+Fig.1\
+- green line = regression line\
+- blue line = error (the difference between the actual values and the predicted values)
+</center>
+
+
+### b) Cost Function
+For each $w_0,w_1...w_n$ there is a regression line. It should be found a single regression line which minimizes the cost function. The one in this case is the **residual sum of squares (RSS)**.
+\
+\
+**The cost function for a generalized regression equation:**
+<center>
+$RSS(w) = \sum\limits_{i=1}^{m} \left(y^{(i)} - (\sum\limits_{j=1}^{n}w_{j}x_{j}^{(i)})\right)^{2} = \frac{1}{2m}\sum\limits_{i=1}^{m} (y^{(i)} - h_w(x^{(i)})^2 = (y - H_w)^T(y-H_w)$ **(1.1)**
+
+$\frac{1}{2}$ - for convenience; useful when calculating the first derivative of the function\
+x(i), y(i) - the i-th row values of x and y in the data set\
+m - number of training example\
+n - number of input variables\
+</center>
+
+\
+
+## **2. Linear Regression as Ordinary Least Squares**
+The fit (in Fig.1) is calculated by minimizing the sum of squared errors.
+
+**Error for observation at step i:** \
+<center>
+if $\hat{y}_i=\hat{w}_0+\hat{w}_1x_i$ => $e_i=y_i-\hat{y}_i$
+</center>
+\
+\
+**Error for all observations:**\
+<center>
+$RSS = e_1^2+e_2^2+...+e_m^2 = (y_1-\hat{w}_0-\hat{w}_1x_1)^2+...+(y_m-\hat{w}_0-\hat{w}_1x_m)^2$\
+$RSS = \sum\limits_{i=1}^{m}(y_i-\hat{w}_0-\hat{w}_1x_i)^2$
+</center>
+
+\
+\
+Differentiate with respect to $w_0$ and $w_1$ to **minimize RSS**:\
+$\frac{\partial RSS}{\partial w_0} = \frac{\partial }{\partial w_0}\sum\limits_{i=1}^{m}(y_i-\hat{w}_0-\hat{w}_1x_i)^2 = -2\sum\limits_{i=1}^{m}(y_i-\hat{w}_0-\hat{w}_1x_i)$\
+$\frac{\partial RSS}{\partial w_0} = 0 => w_0 = \frac{\sum\limits_{i=1}^{m}y_i}{m} - w_1\frac{\sum\limits_{i=1}^{m}x_i}{m} => w_0 = \bar{y} - w_1\bar{x}$ **(A)**\
+
+
+\
+\
+$\frac{\partial RSS}{\partial w_1} = \frac{\partial }{\partial w_1}\sum\limits_{i=1}^{m}(y_i-\hat{w}_0-\hat{w}_1x_i)^2 = -2\sum\limits_{i=1}^{m}x_i(y_i-\hat{w}_0-\hat{w}_1x_i)$\
+\
+<!--
+$\frac{\partial RSS}{\partial w_1} = 0 => 0 = \sum\limits_{i=1}^{m}y_ix_i - \sum\limits_{i=1}^{m}w_0x_i- \sum\limits_{i=1}^{m}w_1x_i^2 $\
+\
+<!--
+$w_1\sum\limits_{i=1}^{m}x_i^2 = \sum\limits_{i=1}^{m}y_ix_i- \frac{\sum\limits_{i=1}^{m}y_i\sum\limits_{i=1}^{m}x_i}{m} - w_1\frac{(\sum\limits_{i=1}^{m}x_i)^2}{m} $\
+-->
+$w_1 = \frac{\sum\limits_{i=1}^{m}(y_ix_i) -\frac{\sum\limits_{i=1}^{m}y_i\sum\limits_{i=1}^{m}x_i}{m}}{\sum\limits_{i=1}^{m}x_i^2 - \frac{(\sum\limits_{i=1}^{m}x_i)^2}{m}}$ 
+
+\
+\
+**Estimation of weights:**
+<center>
+$w = (X^TX)^{-1}X^TY$\
+</center>
+
+```{r}
+# Let’s set up our data with the constant column of 1’s
+set.seed(61)
+x <- runif(100, 0, 10)
+X <- cbind(1, x)
+y <- runif(100, 5, 100)
+eps <- rnorm(100, 0, 0.5)
+# add some noise to the output
+y <- (y + eps)
+## t(X) transposes the matrix X
+## solve(X) calculates the inverse of matrix X
+## use %*% for matrix multiplication
+OLS_coef <- solve(t(X) %*% X) %*% t(X) %*% y
+lm_coef <- lm(y~X)$coef
+
+```
+
+
+\
+
+## **3. Linear Regression as Maximum Likelihood**
+Given **w** defined earlier -which **minimizes the MSE (Mean Squared Error)**- one can proceed to the next step: **linear regression as a maximum likelihood estimation**.For this one needs:
+
+- the model producing a **conditional distribution** defined as:
+
+<center>
+$p(y|x) = N(y|\hat{y}(x,w),\sigma^2)$, 
+$\hat{y}(x,w)$ = prediction of the mean of the Gaussian.
+</center>
+\
+
+- write **likelihood as the product of probabilities** (of Eq. 1.1):
+
+<center>
+$L(p(y|x)) = \prod\limits_{i=1}^{m}\sqrt{(2\pi\sigma^2)}exp(-\frac{1}{2}\frac{(y_i-wx_i)^2}{\sigma^2})$  
+\
+$L(p(y|x)) = (2\pi\sigma^2)^\frac{m}{2}exp(-\frac{1}{2\sigma^2}\sum\limits_{i=1}^{m}(y_i-wx_i)^2)$ 
+</center>
+\
+
+- for the equation at previous step, the **log-likelihood**:
+<center>
+$ll(p(y|x)) = \log((2\pi\sigma^2)^\frac{m}{2}exp(-\frac{1}{2\sigma^2}\sum\limits_{i=1}^{m}(y_i-wx_i)^2))$\
+$\sum\limits_{i=1}^mlog(p(y^{(i)}|x^{(i)};w) = -m\log{\sigma} -\frac{m}{2}\log{(2\pi)}-\sum\limits_{i=1}^m\frac{||\hat{y}^{(i)}-y^{(i)}||^2}{2\sigma^2}$
+</center>
+\
+- **MSE**:
+<center>
+$MSE_{train} = \frac{1}{m}\sum\limits_{i=1}^{m}{||\hat{y}^{(i)}-y^{(i)}||^2}$  
+</center>
+
+
+In conclusion, as is stated by Abhijit Ghatak, "maximizing the log-likelihood with respect to **w** yields the same estimate of the parameters as does minimizing the **MSE**."\
+
+\
+
+## **4. Gradient Descent**
+Gradient descent is an algorithm which **finds the lowest MSE**. It consists in trying to find the weights/parameters which will lead to the **minimum cost**. \
+
+The following steps show how the minimum cost by using gradient descent.\
+
+### a) Hypothesis Function
+<center>
+$\frac{\partial}{\partial w}(RSS(w)) = \frac{\partial}{\partial w}(\frac{1}{2m}\sum\limits_{i=1}^{m}{(y^{(i)}-h_w(x^{(i)})^2)} = -\frac{1}{m}\sum\limits_{i=1}^{m}(y^{(i)}-h_w(x^{(i)}))x^{(i)}$\
+\
+$\frac{\partial}{\partial w}(RSS(w)) = -2H^T(y-H_w)$
+</center>
+
+### b) Closed Form Solution
+<center>
+$\frac{\partial}{\partial w}(RSS(w)) = -2H^T(y-H_w) = 0$
+</center>
+\
+Result after using the method of ordinary least squares:
+<center>
+$\hat{w}=(H^TH)^{-1}(H^T)y$
+</center>
+
+### c) Step-by-Step Batch Gradient Descent
+The procedure consists in updating the weights with every input:
+<center>
+![](D:\MasterInfo\AN1-SEM1\DataMining\DataMining\Images\4.4.3.png)\
+</center>
+\
+
+In order to minimize the the cost, **tolerance** is calculated as follow:
+\
+\
+ <center>
+ $||\frac{\partial}{\partial w}RSS(w^{(t)})|| = \sqrt{\frac{\partial}{\partial w}RSS(w_0^{(t)})^2 + \frac{\partial}{\partial w}RSS(w_1^{(t)})^2 + ... + \frac{\partial}{\partial w}RSS(w_m^{(t)})^2}$
+ </center>
+
+\
+
+### d) Writing the Batch Gradient Descent Application
+In order to write the the Batch Gradient Descent application, four functions need to be defined:
+
+- **data_matrix** - receives the features and scales them before returning the matrix and output; this will help further in the gradient descent algorithm (ensure faster convergence)
+
+```{r}
+data_matrix <- function(data, features, output){
+  scaled_feature_matrix <- data.frame(scale(data[features]), row.names=NULL)
+  length <- nrow(data)
+  scaled_features <- as.matrix(cbind('Intercept' = rep(1, length),
+                               scaled_feature_matrix[, features]))
+  output <- as.matrix(scale(data[output]))
+  return(list(scaled_features, output))
+}
+```
+
+- **predict_output** - receives the features and weights (for each feature) and returns the predictions.
+```{r}
+predict_output = function(feature_matrix, weights) {
+  predictions = (as.matrix(feature_matrix)) %*% weights
+  return(predictions)
+}
+```
+
+- **featureDerivative** - calculates the RSS gradient at each feature
+
+```{r}
+featureDerivative = function(errors, features) {
+  derivative = -1/nrow(features) * (t(features) %*% errors)
+  return(derivative)
+}
+```
+
+- **regression_gradient_descent** - the function which executes the algorithm described above (c); it returns the computed weights (for each feature) and the number of steps it took to converge.
+
+```{r}
+regression_gradient_descent = function(feature_matrix, output,
+  initial_weights, step_size, tolerance) {
+  converged = FALSE
+  weights = initial_weights
+  i = 0
+  while (!converged) {
+    predictions = predict_output(feature_matrix, weights)
+    errors = predictions - output
+    gradient = featureDerivative(errors, feature_matrix)
+    gradient_norm = sqrt(sum(gradient^2))
+    weights = weights + step_size * gradient
+    if (gradient_norm < tolerance) {
+    converged = TRUE
+    }
+    i = i + 1
+  }
+  return(list(weights = weights, Iters = i))
+}
+```
+
+\
+
+### EXAMPLE
+"kc_house_data.csv" file will be used - available at kaggle. It contains 
+data about the houses sold in King County, Portland, Oregon from May 2014 to May
+2015. 
+\
+
+**STEPS** to use gradient descent algorithm:\
+
+- select as dependent variable the *price* and as predictor the *sqft_living* and *bedrooms* values;
+
+```{r}
+file_path = "./"
+kc_house_data <- read.csv(paste(file_path, "kc_house_data.csv",
+sep = ""))
+house_data <- kc_house_data[, c("price", "bedrooms", "sqft_living")]
+```
+
+- split the data into **train data** and **test data**;
+
+``` {r}
+library(caret)
+set.seed(22)
+inTrain <- createDataPartition(house_data$price, p = 0.5, list = F)
+house_train_data = house_data[inTrain,]
+house_test_data = house_data[-inTrain,]
+```
+
+- define the **features** and the **output**
+``` {r}
+my_features <- c("bedrooms", "sqft_living")
+my_output <- "price"
+```
+
+- construct **feature matrix** and **output matrix**; initialize the weights, step size and tolerance;
+
+``` {r}
+feature_matrix = data_matrix(house_train_data, my_features, my_output)[[1]]
+output_matrix = data_matrix(house_train_data, my_features, my_output)[[2]]
+initial_weights = c(0, 0, 0)
+step_size = 0.01
+tolerance = 1e-5
+```
+
+- run the gradient descent algorithm and find the feature weights;
+
+``` {r}
+weights = regression_gradient_descent(feature_matrix,
+                                      output_matrix,
+                                      initial_weights,
+                                      step_size,
+                                      tolerance)
+weights
+```
+
+- check with **OLS regressions** in R
+
+``` {r}
+scaled_house_data <- data.frame(scale(house_train_data))
+lm(price ~ ., data = scaled_house_data)$coef
+```
+\
+
+**Gradient descent** can also be used from R **package, gettingtothebottom** by calling **gdescent function**.\
+gdescent(f, grad_f, X,y, alpha, iter, tol, …):\
+
+- f: objective function\
+
+- grad_f: gradient of the objective function\
+
+- X: feature matrix\
+
+- y: response vector\
+
+- alpha: step size alpha\
+
+- iter: number of iterations\
+
+- tol: tolerance\
+
+
+```{r}
+
+library(gettingtothebottom)
+
+X <- as.matrix(feature_matrix[, -1])
+y <- as.vector(output_matrix)
+
+# initialize the weights
+b <- c(0, 0, 0)
+
+# define the objective function
+f <- function(X, y, b) {
+  (1/2) * norm(y - X %*% b, "F")^2
+}
+
+# Calculate gradient of the objective function
+grad_f <- function(X, y, b) {
+  t(X) %*% (X %*% b - y)
+}
+```
+
+
+``` {r}
+gradient_descent <- gdescent(f,
+                             grad_f,
+                             X, y,
+                             alpha = 10e-5,
+                             iter = 10e7,
+                             tol = 1e-5)
+```
+
+\
+
+**Conclusion!** Same results obtained in both cases (implementing the functions vs using function from R package)\
+**Important!** When choosing the tolerance and step size values it is better to start from:\
+
+- higher step size -> may lead to non-convergence\
+
+- low tolerance -> might take a long time to converge\
+
+
+### e) Writing the Stochastic Gradient Descent Application
+Stochastic Gradient Descent is used when dealing with large size data (e.g. m = 1e20). Unlike the batch gradient descent who goes through all the cases,
+Stochastic Gradient Descent selects randomly from the data set and starts modifying the parameters right away. The process is repeated until there are no
+more entries in the data set.\
+
+Using the algorithm at from f) will take a long time to converge in this case.\
+
+The procedure is repeated by the number of iterations defined.
+
+``` {r}
+sgd<-function(x, y, betas, iters, lambda)
+{
+  beta<-as.matrix(cbind(rep(betas[1], iters),
+                  rep(betas[2], iters),
+                  rep(betas[3],iters))
+                 )
+  for (i in 2:iters)
+  {
+    m <- nrow(x)
+    sample_num <- sample.int(m, 1)
+    row_x <- x[sample_num,]
+    row_y <- y[sample_num]
+    beta[i, 1] <- beta[i-1, 1] - (lambda*(beta[i-1, 1] +
+                                  beta[i-1, 2]*row_x[[1]] +
+                                  beta[i-1, 3]*row_x[[2]] -
+                                  row_y)
+                                 )
+    beta[i, 2] <- beta[i-1, 2] - (lambda*(beta[i-1, 1] +
+                                  beta[i-1, 2]*row_x[[1]] +
+                                  beta[i-1,3]*row_x[[2]] -
+                                  row_y)*row_x[[1]]
+                                 )
+    beta[i, 3] <- beta[i-1,3] - lambda*(beta[i-1, 1] +
+                                        beta[i-1, 2]*row_x[[1]] +
+                                        beta[i-1,3]*row_x[[2]] -
+                                        row_y)*row_x[[2]]
+  }
+  return(beta);
+}
+```
+
+\
+``` {r}
+betas = c(0, 0, 0)
+iters = 3000
+lambda = 0.0001
+weights = sgd(feature_matrix[, -1],
+              output_matrix,
+              betas,
+              iters = iters,
+              lambda = lambda)
+weights[1:10,]
+```
+\
+
+**Conclusion!** The results are different from the standard multiple regression function in R, but have close values.\
+**Important!** Stochastic Gradient Descent is helpful when having large size data. It is not actually converging (hovers around the local minima).\
+
+\
+
+## **5. Linear Regression Assumptions**
+Linear regression assumptions:\
+
+### a) **Linear Relationship**
+between the response and the predictors; the values of the residuals and the predicted 
+can be plotted to best see the relationship. Non-linearity can be detected if there is any particular pattern in the plot, but is not
+always the case (see **5.2** where the plot between fitted values and the residuals of the polynomial regression model does not show any
+pattern)
+
+Non-linearity **example** for the regression model:\
+<center>
+$y = w_0 + w_1x_1+w_2x_2+...+w_5x_5$
+</center>
+\
+
+<center>
+![](D:\MasterInfo\AN1-SEM1\DataMining\DataMining\Images\4.5.1.png)\
+**5.1. Non-linear Relationship**
+</center>
+\
+
+<center>
+![](D:\MasterInfo\AN1-SEM1\DataMining\DataMining\Images\4.5.2.png)\
+**5.2. Residuals vs fitted/predicted values**
+</center>
+\
+\
+
+``` {r}
+# mean(fit$residuals)
+```
+
+
+### b) **Residuals have zero mean**
+
+``` {r}
+# mean(fit$residuals)
+``` 
+
+\
+
+### c) **No autocorrelation of residuals:** 
+The correlation occurs usually when dealing with *time series* data. "**The null hypothesis autocorrelation
+of the residuals is 0**" can be tested as below. 
+\
+
+``` {r}
+# (lmtest::dwtest(fit))$p.value
+``` 
+
+\
+
+If p-value is grater than 0.05, then the null hypothesis autocorrelation
+of the residuals is 0 is accepted.
+
+### d) **Homoscedasticity of residuals:**
+\
+**Homoscedasticity** = "equal variance”; it happens when the error is the same for all  the values of the independent variables.\
+Example of Homoscedasticity in image 5.2.\
+\
+**Heteroscedasticity** = violation of Homoscedasticity; it happens when the error is different across the values of the independent variable.\
+
+### e) **Absence of collinearity within the independent variables:**
+\
+**Collinearity** = "two or more variables are closely related to one another".\
+**VIF(variance inflation factor)** = "a metric computed for all predictor variables". \
+\
+<center>
+$VIF = \frac{1}{1-R^2}, R^2 =$ variance proportion;
+</center>
+\
+
+- if VIF value is low (<2) => is ok;\
+
+- if the VIF value is high => information of the variable is already explained by other predictor variable(s).\
+
+**EXAMPLE** with car package:\
+\
+``` {r}
+library("car")
+fit <- lm(Employed~ GNP + Year, data = longley)
+car::vif(fit)
+```
+\
+
+From this 2 examples, it can be seen that:\
+
+- *GNP* and *Year* are highly correlated;\
+
+- *GNP* and *Unemployed* are not collinear;\
+\
+
+<center>
+![](D:\MasterInfo\AN1-SEM1\DataMining\DataMining\Images\4.5.3.png)\
+4.5.3. RSS results - correlated and uncorrelated variables
+</center>
+
+\
+Using the *findCorrelation* function (caret package), highly correlated variables can be found.\ 
+``` {r}
+highlyCorrelated <- findCorrelation(cor(longley), cutoff=0.7)
+colnames(longley)[highlyCorrelated]
+```
+\
+
+
+## **6. Summary of Regression Outputs**
+In this case, the summary of regression outputs will be done using the *house data*
+which was used previously.
+\
+
+- **$H_0$ = Null Hypothesis:** coefficients = 0 => no relationship between the predictors and the response\
+
+- **$H_a$ = Alternate Hypothesis:** coeficients != 0 => some relationship between the predictors and the response\
+\
+
+
+### a) ** t value**
+= the number of the standard deviations between the estimated coefficient
+from the original value of 0.
+\
+``` {r}
+model <- lm(price ~ sqft_living + bedrooms, data = kc_house_data)
+model
+
+t_value <- model$coef / coef(summary(model))[, "Std. Error"]
+t_value
+```
+
+\
+If **t_value** is high that means the feature could have a nonzero coefficient and should be kept in the model.
+\
+
+### b) **p-value** 
+= converts the t_value into probabilities. The probabilities are used to determine "how likely is the coefficient to be equal to zero instead of the current value of the estimate".\
+```{r}
+# Find degree of freedom
+dof <- nrow(kc_house_data) - length(model$coef + 1)
+# 1 is added to include the Intercept term
+dof
+
+# converting the t value into absolute values 
+# calculate the upper tail of the distribution 
+# multiply it by 2
+# “pt” - calculates the quantile of the t-distribution
+pt(abs(coef(summary(model))[, "t value"]), df = dof, lower.tail = FALSE) * 2
+```
+\
+If **p-value** is high that means the feature doesn't provide new information to the output.\
+\
+
+### c) **R-Squared** 
+= the proportion of the output variance:\
+\
+
+$R^2 = 1 - \frac{RSS}{TSS} = 1 - \frac{\sum\limits_{i=1}^{n}(y_i-\hat{y}_i)^2}{\sum\limits_{i=1}^{n}()y_i-\bar{y})^2}$\
+\
+```{r}
+# define function
+Rsquared <- function(y, yhat)
+{
+  rss <- sum( (y - yhat)^2 )
+  tss <- sum( ( y - mean(y) )^2 )
+  return( 1 - rss / tss )
+}
+
+# R-square in R is:
+summary(model)$r.squared
+
+# using the defined function:
+Rsquared(kc_house_data$price, model$fitted.values)
+```
+\
+
+If the **R-Squared** value is **closed to 1** that means **the model doesn't need to include any more* features. It can explain "most of the varinace in the target"most of the variance in thetarget variable". Otherwise, new features need to be added.
+\
+\
+
+### e) **Adjusted R Square** - the R-square is adjusted based on the complexity of the model. R-squared value goes up if more variables are included, even if the are redundant (don't contribute
+towards explaining the response).
+\
+```{r}
+# define function
+k <- length(model$coef) # Intercept term is not included
+adjustedRSquared <- function(y, yhat, k)
+{
+  n <- length(y)
+  r2 <- Rsquared(y, yhat)
+  return( 1 - (1 - r2) * (n - 1) / (n - k - 1) )
+}
+
+# adjusted R-square in R:
+summary(model)$adj.r.squared
+
+# using the defined function:
+adjustedRSquared( kc_house_data$price, model$fitted.values, k )
+```
+\
+
+### e) **AIC and BIC**\
+
+ - **AIC** = Akaike information criterion;\
+ 
+ - **BIC** = Bayesian information criterion;\
+ 
+ - "are  measures of goodness of fit";\
+ 
+ - simple models are preferred; the more complex ones are penalized;\
+ 
+ - the model with the lower AIC and BIC is chosen (in case of multiple models);\
+ 
+ - "they depend on the maximized value of the likelihood function *L* of the estimated model";\
+ 
+\
+
+
+
+
+## **7. Ridge Regression**
+## **8. Assessing Performance**
+## **9. Lasso Regression**
