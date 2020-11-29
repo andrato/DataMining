@@ -1,0 +1,85 @@
+---
+title: "linear_regression"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{linear_regression}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(linearRegression)
+```
+
+
+
+## Hypothesis Function
+\
+<center>
+$h_w(x) = w_0 + w_1x_1 + ... +w_nx_n + \epsilon = \sum\limits_{j=0}^{n}(w_jx_j) + \epsilon$\
+<!-- A. Ghatak, Machine Learning with R -->
+</center>
+\
+\
+<center>
+![](D:\MasterInfo\AN1-SEM1\DataMining\DataMining\Images\4.1.png)\
+**Fig.1.Example of simple linear regression as ordinary least squares**\
+- green line = regression line\
+- blue line = error (the difference between the actual values and the predicted values)
+</center>
+\
+\
+
+## Cost Function
+RSS = residual sum of squares\
+\
+**The cost function for a generalized regression equation:**\
+\
+<center>
+![](D:\MasterInfo\AN1-SEM1\DataMining\DataMining\Images\4.1.2.png)\
+</center>
+\
+\
+
+## Linear Regression as Ordinary Least Squares
+**Estimation of weights:**
+<center>
+$w = (X^TX)^{-1}X^TY$\
+</center>
+
+```{r}
+# Let’s set up our data with the constant column of 1’s
+set.seed(61)
+x <- runif(100, 0, 10)
+X <- cbind(1, x)
+y <- runif(100, 5, 100)
+eps <- rnorm(100, 0, 0.5)
+# add some noise to the output
+y <- (y + eps)
+## t(X) transposes the matrix X
+## solve(X) calculates the inverse of matrix X
+## use %*% for matrix multiplication
+OLS_coef <- solve(t(X) %*% X) %*% t(X) %*% y
+lm_coef <- lm(y~X)$coef
+
+m <- cbind(OLS_coef,lm_coef)
+
+mat <- matrix(m, nrow=2, byrow = TRUE) 
+colnames(mat, do.NULL = FALSE)
+colnames(mat) <- c("OLS_coef", "lm_coef")
+rownames(mat) <- c("Intercept(w0)", "w1")
+# print matrix 
+print(mat) 
+```
+\
+\
+
+
+

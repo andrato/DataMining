@@ -1,0 +1,206 @@
+---
+title: "gradient_descent"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{gradient_descent}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+
+```
+
+```{r setup}
+library(linearRegression)
+```
+
+
+## Batch Gradient Descent Application\
+### a) Hypothesis Function
+<center>
+$\frac{\partial}{\partial w}(RSS(w)) = -2H^T(y-H_w)$
+</center>
+
+### b) Closed Form Solution
+<center>
+$\frac{\partial}{\partial w}(RSS(w)) = -2H^T(y-H_w) = 0$
+</center>
+\
+\
+Result after using the method of ordinary least squares:\
+\
+<center>
+$\hat{w}=(H^TH)^{-1}(H^T)y$
+</center>
+
+\
+\
+In order to minimize the the cost, **tolerance** is calculated as follow:
+\
+\
+ <center>
+ $||\frac{\partial}{\partial w}RSS(w^{(t)})|| = \sqrt{\frac{\partial}{\partial w}RSS(w_0^{(t)})^2 + \frac{\partial}{\partial w}RSS(w_1^{(t)})^2 + ... + \frac{\partial}{\partial w}RSS(w_m^{(t)})^2}$
+ </center>
+
+\
+\
+
+### b) Functions needed
+\
+
+- **data_matrix** - receives the features and scales them before returning the matrix and output.
+
+```{r}
+data_matrix
+```
+
+\
+
+- **predict_output** - receives the features and weights (for each feature) and returns the predictions.
+
+```{r}
+predict_output
+```
+\
+
+- **featureDerivative** - calculates the RSS gradient at each feature.
+
+```{r}
+featureDerivative
+```
+\
+
+- **regression_gradient_descent** - it returns the computed weights (for each feature) and the number of steps it took to converge.
+
+```{r}
+regression_gradient_descent
+```
+\
+\
+
+
+## EXAMPLE
+"kc_house_data.csv" file will be used - available at kaggle. It contains 
+data about the houses sold in King County, Portland, Oregon from May 2014 to May
+2015. 
+\
+
+```{r}
+file_path = "D:/MasterInfo/AN1-SEM1/DataMining/DataMining/"
+kc_house_data <- read.csv(paste(file_path, "kc_house_data.csv",
+sep = ""))
+house_data <- kc_house_data[, c("price", "bedrooms", "sqft_living")]
+
+
+set.seed(22)
+inTrain <- createDataPartition(house_data$price, p = 0.5, list = F)
+house_train_data = house_data[inTrain,]
+house_test_data = house_data[-inTrain,]
+
+
+my_features <- c("bedrooms", "sqft_living")
+my_output <- "price"
+
+
+feature_matrix = data_matrix(house_train_data, my_features, my_output)[[1]]
+output_matrix = data_matrix(house_train_data, my_features, my_output)[[2]]
+initial_weights = c(0, 0, 0)
+step_size = 0.01
+tolerance = 1e-5
+
+
+
+weights = regression_gradient_descent(feature_matrix,
+                                      output_matrix,
+                                      initial_weights,
+                                      step_size,
+                                      tolerance)
+weights
+```
+
+\
+\
+
+
+### **Gradient descent** from R **package, gettingtothebottom**\
+gdescent(f, grad_f, X,y, alpha, iter, tol, …):\
+
+- f: objective function\
+
+- grad_f: gradient of the objective function\
+
+- X: feature matrix\
+
+- y: response vector\
+
+- alpha: step size alpha\
+
+- iter: number of iterations\
+
+- tol: tolerance\
+
+
+```{r}
+
+library(gettingtothebottom)
+
+X <- as.matrix(feature_matrix[, -1])
+y <- as.vector(output_matrix)
+
+# initialize the weights
+b <- c(0, 0, 0)
+
+# define the objective function
+f <- function(X, y, b) {
+  (1/2) * norm(y - X %*% b, "F")^2
+}
+
+# Calculate gradient of the objective function
+grad_f <- function(X, y, b) 
+{
+  t(X) %*% (X %*% b - y)
+}
+  
+  
+gradient_descent <- gdescent(f,
+                             grad_f,
+                             X, y,
+                             alpha = 10e-5,
+                             iter = 10e7,
+                             tol = 1e-5)
+
+
+```
+
+## Stochastic Gradient Descent Application
+\
+
+- is used when dealing with large size data (e.g. m = 1e20);\
+
+- selects randomly from the data set and starts modifying the parameters;\
+
+- the process is repeated until there are no more entries in the data set;\
+
+- the procedure is repeated by the number of iterations defined.\
+\
+
+``` {r}
+sgd
+
+betas = c(0, 0, 0)
+iters = 3000
+lambda = 0.0001
+weights = sgd(feature_matrix[, -1],
+              output_matrix,
+              betas,
+              iters = iters,
+              lambda = lambda)
+weights[1:10,]
+```
+
+

@@ -10,7 +10,7 @@
 
 
 
-<meta name="date" content="2020-11-26" />
+<meta name="date" content="2020-11-29" />
 
 <title>LINEAR REGRESSION FROM SCRATCH</title>
 
@@ -488,14 +488,17 @@ summary {
 <h1 class="title toc-ignore">LINEAR REGRESSION FROM SCRATCH</h1>
 <h4 class="author">Andra Tomi (Gr 405)</h4>
 <h4 class="author">Adrian Apostol (Gr 405)</h4>
-<h4 class="date">26 November 2020</h4>
+<h4 class="date">29 November 2020</h4>
 
 </div>
 
 
+<p><br />
+</p>
 <div id="linear-regression" class="section level2">
 <h2><strong>1. Linear Regression</strong></h2>
 <p><strong>Univariate linear regression/simple linear regression</strong> is a linear regression with one variable x. It is an example of <strong>supervised learning</strong> where the output values are known in the training data. In simple linear regression, for each input is predicted a single output.<br />
+<br />
 </p>
 <div id="a-hypothesis-function" class="section level3">
 <h3>a) Hypothesis Function</h3>
@@ -503,7 +506,7 @@ summary {
 <strong>The hypothesis function:</strong><br />
 
 <center>
-<span class="math inline">\(RSS(w) = w_0 + w_1x_1 + ... +w_nx_n + \epsilon = \sum\limits_{j=0}^{n}(w_jx_j) + \epsilon\)</span><br />
+<span class="math inline">\(h_w(x) = w_0 + w_1x_1 + ... +w_nx_n + \epsilon = \sum\limits_{j=0}^{n}(w_jx_j) + \epsilon\)</span><br />
 <!-- A. Ghatak, Machine Learning with R -->
 </center>
 <p><br />
@@ -519,6 +522,8 @@ Fig.1<br />
 - green line = regression line<br />
 - blue line = error (the difference between the actual values and the predicted values)
 </center>
+<p><br />
+</p>
 </div>
 <div id="b-cost-function" class="section level3">
 <h3>b) Cost Function</h3>
@@ -568,7 +573,7 @@ $\frac{\partial RSS}{\partial w_1} = 0 => 0 = \sum\limits_{i=1}^{m}y_ix_i - \sum
 \
 <!--
 $w_1\sum\limits_{i=1}^{m}x_i^2 = \sum\limits_{i=1}^{m}y_ix_i- \frac{\sum\limits_{i=1}^{m}y_i\sum\limits_{i=1}^{m}x_i}{m} - w_1\frac{(\sum\limits_{i=1}^{m}x_i)^2}{m} $\
---> <span class="math inline">\(w_1 = \frac{\sum\limits_{i=1}^{m}(y_ix_i) -\frac{\sum\limits_{i=1}^{m}y_i\sum\limits_{i=1}^{m}x_i}{m}}{\sum\limits_{i=1}^{m}x_i^2 - \frac{(\sum\limits_{i=1}^{m}x_i)^2}{m}}\)</span></p>
+--> <span class="math inline">\(w_1 = \frac{\sum\limits_{i=1}^{m}(y_ix_i) -\frac{\sum\limits_{i=1}^{m}y_i\sum\limits_{i=1}^{m}x_i}{m}}{\sum\limits_{i=1}^{m}x_i^2 - \frac{(\sum\limits_{i=1}^{m}x_i)^2}{m}}\)</span> <strong>(B)</strong></p>
 <br />
 <br />
 <strong>Estimation of weights:</strong>
@@ -588,7 +593,21 @@ $w_1\sum\limits_{i=1}^{m}x_i^2 = \sum\limits_{i=1}^{m}y_ix_i- \frac{\sum\limits_
 <span id="cb1-10"><a href="#cb1-10"></a><span class="co">## solve(X) calculates the inverse of matrix X</span></span>
 <span id="cb1-11"><a href="#cb1-11"></a><span class="co">## use %*% for matrix multiplication</span></span>
 <span id="cb1-12"><a href="#cb1-12"></a>OLS_coef &lt;-<span class="st"> </span><span class="kw">solve</span>(<span class="kw">t</span>(X) <span class="op">%*%</span><span class="st"> </span>X) <span class="op">%*%</span><span class="st"> </span><span class="kw">t</span>(X) <span class="op">%*%</span><span class="st"> </span>y</span>
-<span id="cb1-13"><a href="#cb1-13"></a>lm_coef &lt;-<span class="st"> </span><span class="kw">lm</span>(y<span class="op">~</span>X)<span class="op">$</span>coef</span></code></pre></div>
+<span id="cb1-13"><a href="#cb1-13"></a>lm_coef &lt;-<span class="st"> </span><span class="kw">lm</span>(y<span class="op">~</span>X)<span class="op">$</span>coef</span>
+<span id="cb1-14"><a href="#cb1-14"></a></span>
+<span id="cb1-15"><a href="#cb1-15"></a>m &lt;-<span class="st"> </span><span class="kw">cbind</span>(OLS_coef,lm_coef)</span></code></pre></div>
+<pre><code>## Warning in cbind(OLS_coef, lm_coef): number of rows of result is not a multiple
+## of vector length (arg 2)</code></pre>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>mat &lt;-<span class="st"> </span><span class="kw">matrix</span>(m, <span class="dt">nrow=</span><span class="dv">2</span>, <span class="dt">byrow =</span> <span class="ot">TRUE</span>) </span>
+<span id="cb3-2"><a href="#cb3-2"></a><span class="kw">colnames</span>(mat, <span class="dt">do.NULL =</span> <span class="ot">FALSE</span>)</span></code></pre></div>
+<pre><code>## [1] &quot;col1&quot; &quot;col2&quot;</code></pre>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a><span class="kw">colnames</span>(mat) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;OLS_coef&quot;</span>, <span class="st">&quot;lm_coef&quot;</span>)</span>
+<span id="cb5-2"><a href="#cb5-2"></a><span class="kw">rownames</span>(mat) &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;Intercept(w0)&quot;</span>, <span class="st">&quot;w1&quot;</span>)</span>
+<span id="cb5-3"><a href="#cb5-3"></a><span class="co"># print matrix </span></span>
+<span id="cb5-4"><a href="#cb5-4"></a><span class="kw">print</span>(mat)</span></code></pre></div>
+<pre><code>##               OLS_coef   lm_coef
+## Intercept(w0) 49.26502 0.0224736
+## w1            49.26502        NA</code></pre>
 <p><br />
 </p>
 </div>
@@ -636,17 +655,22 @@ $w_1\sum\limits_{i=1}^{m}x_i^2 = \sum\limits_{i=1}^{m}y_ix_i- \frac{\sum\limits_
 <p>Gradient descent is an algorithm which <strong>finds the lowest MSE</strong>. It consists in trying to find the weights/parameters which will lead to the <strong>minimum cost</strong>.<br />
 </p>
 <p>The following steps show how the minimum cost by using gradient descent.<br />
+<br />
 </p>
 <div id="a-hypothesis-function-1" class="section level3">
-<h3>a) Hypothesis Function</h3>
+<h3>a) Hypothesis Function<br />
+</h3>
 <center>
 <span class="math inline">\(\frac{\partial}{\partial w}(RSS(w)) = \frac{\partial}{\partial w}(\frac{1}{2m}\sum\limits_{i=1}^{m}{(y^{(i)}-h_w(x^{(i)})^2)} = -\frac{1}{m}\sum\limits_{i=1}^{m}(y^{(i)}-h_w(x^{(i)}))x^{(i)}\)</span><br />
 <br />
 <span class="math inline">\(\frac{\partial}{\partial w}(RSS(w)) = -2H^T(y-H_w)\)</span>
 </center>
+<p><br />
+</p>
 </div>
 <div id="b-closed-form-solution" class="section level3">
-<h3>b) Closed Form Solution</h3>
+<h3>b) Closed Form Solution<br />
+</h3>
 <center>
 <span class="math inline">\(\frac{\partial}{\partial w}(RSS(w)) = -2H^T(y-H_w) = 0\)</span>
 </center>
@@ -655,9 +679,12 @@ Result after using the method of ordinary least squares:
 <center>
 <span class="math inline">\(\hat{w}=(H^TH)^{-1}(H^T)y\)</span>
 </center>
+<p><br />
+</p>
 </div>
 <div id="c-step-by-step-batch-gradient-descent" class="section level3">
-<h3>c) Step-by-Step Batch Gradient Descent</h3>
+<h3>c) Step-by-Step Batch Gradient Descent<br />
+</h3>
 The procedure consists in updating the weights with every input:
 <center>
 <img src="data:image/png;base64,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" /><br />
@@ -675,54 +702,63 @@ In order to minimize the the cost, <strong>tolerance</strong> is calculated as f
 </p>
 </div>
 <div id="d-writing-the-batch-gradient-descent-application" class="section level3">
-<h3>d) Writing the Batch Gradient Descent Application</h3>
-<p>In order to write the the Batch Gradient Descent application, four functions need to be defined:</p>
+<h3>d) Writing the Batch Gradient Descent Application<br />
+</h3>
+<p>In order to write the the Batch Gradient Descent application, four functions need to be defined:<br />
+</p>
 <ul>
-<li><strong>data_matrix</strong> - receives the features and scales them before returning the matrix and output; this will help further in the gradient descent algorithm (ensure faster convergence)</li>
+<li><strong>data_matrix</strong> - receives the features and scales them before returning the matrix and output; this will help further in the gradient descent algorithm (ensure faster convergence)<br />
+</li>
 </ul>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1"></a>data_matrix &lt;-<span class="st"> </span><span class="cf">function</span>(data, features, output){</span>
-<span id="cb2-2"><a href="#cb2-2"></a>  scaled_feature_matrix &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="kw">scale</span>(data[features]), <span class="dt">row.names=</span><span class="ot">NULL</span>)</span>
-<span id="cb2-3"><a href="#cb2-3"></a>  length &lt;-<span class="st"> </span><span class="kw">nrow</span>(data)</span>
-<span id="cb2-4"><a href="#cb2-4"></a>  scaled_features &lt;-<span class="st"> </span><span class="kw">as.matrix</span>(<span class="kw">cbind</span>(<span class="st">&#39;Intercept&#39;</span> =<span class="st"> </span><span class="kw">rep</span>(<span class="dv">1</span>, length),</span>
-<span id="cb2-5"><a href="#cb2-5"></a>                               scaled_feature_matrix[, features]))</span>
-<span id="cb2-6"><a href="#cb2-6"></a>  output &lt;-<span class="st"> </span><span class="kw">as.matrix</span>(<span class="kw">scale</span>(data[output]))</span>
-<span id="cb2-7"><a href="#cb2-7"></a>  <span class="kw">return</span>(<span class="kw">list</span>(scaled_features, output))</span>
-<span id="cb2-8"><a href="#cb2-8"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a>data_matrix &lt;-<span class="st"> </span><span class="cf">function</span>(data, features, output){</span>
+<span id="cb7-2"><a href="#cb7-2"></a>  scaled_feature_matrix &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="kw">scale</span>(data[features]), <span class="dt">row.names=</span><span class="ot">NULL</span>)</span>
+<span id="cb7-3"><a href="#cb7-3"></a>  length &lt;-<span class="st"> </span><span class="kw">nrow</span>(data)</span>
+<span id="cb7-4"><a href="#cb7-4"></a>  scaled_features &lt;-<span class="st"> </span><span class="kw">as.matrix</span>(<span class="kw">cbind</span>(<span class="st">&#39;Intercept&#39;</span> =<span class="st"> </span><span class="kw">rep</span>(<span class="dv">1</span>, length),</span>
+<span id="cb7-5"><a href="#cb7-5"></a>                               scaled_feature_matrix[, features]))</span>
+<span id="cb7-6"><a href="#cb7-6"></a>  output &lt;-<span class="st"> </span><span class="kw">as.matrix</span>(<span class="kw">scale</span>(data[output]))</span>
+<span id="cb7-7"><a href="#cb7-7"></a>  <span class="kw">return</span>(<span class="kw">list</span>(scaled_features, output))</span>
+<span id="cb7-8"><a href="#cb7-8"></a>}</span></code></pre></div>
+<p><br />
+</p>
 <ul>
 <li><strong>predict_output</strong> - receives the features and weights (for each feature) and returns the predictions.</li>
 </ul>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1"></a>predict_output =<span class="st"> </span><span class="cf">function</span>(feature_matrix, weights) {</span>
-<span id="cb3-2"><a href="#cb3-2"></a>  predictions =<span class="st"> </span>(<span class="kw">as.matrix</span>(feature_matrix)) <span class="op">%*%</span><span class="st"> </span>weights</span>
-<span id="cb3-3"><a href="#cb3-3"></a>  <span class="kw">return</span>(predictions)</span>
-<span id="cb3-4"><a href="#cb3-4"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1"></a>predict_output =<span class="st"> </span><span class="cf">function</span>(feature_matrix, weights) {</span>
+<span id="cb8-2"><a href="#cb8-2"></a>  predictions =<span class="st"> </span>(<span class="kw">as.matrix</span>(feature_matrix)) <span class="op">%*%</span><span class="st"> </span>weights</span>
+<span id="cb8-3"><a href="#cb8-3"></a>  <span class="kw">return</span>(predictions)</span>
+<span id="cb8-4"><a href="#cb8-4"></a>}</span></code></pre></div>
+<p><br />
+</p>
 <ul>
 <li><strong>featureDerivative</strong> - calculates the RSS gradient at each feature</li>
 </ul>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1"></a>featureDerivative =<span class="st"> </span><span class="cf">function</span>(errors, features) {</span>
-<span id="cb4-2"><a href="#cb4-2"></a>  derivative =<span class="st"> </span><span class="dv">-1</span><span class="op">/</span><span class="kw">nrow</span>(features) <span class="op">*</span><span class="st"> </span>(<span class="kw">t</span>(features) <span class="op">%*%</span><span class="st"> </span>errors)</span>
-<span id="cb4-3"><a href="#cb4-3"></a>  <span class="kw">return</span>(derivative)</span>
-<span id="cb4-4"><a href="#cb4-4"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1"></a>featureDerivative =<span class="st"> </span><span class="cf">function</span>(errors, features) {</span>
+<span id="cb9-2"><a href="#cb9-2"></a>  derivative =<span class="st"> </span><span class="dv">-1</span><span class="op">/</span><span class="kw">nrow</span>(features) <span class="op">*</span><span class="st"> </span>(<span class="kw">t</span>(features) <span class="op">%*%</span><span class="st"> </span>errors)</span>
+<span id="cb9-3"><a href="#cb9-3"></a>  <span class="kw">return</span>(derivative)</span>
+<span id="cb9-4"><a href="#cb9-4"></a>}</span></code></pre></div>
+<p><br />
+</p>
 <ul>
 <li><strong>regression_gradient_descent</strong> - the function which executes the algorithm described above (c); it returns the computed weights (for each feature) and the number of steps it took to converge.</li>
 </ul>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1"></a>regression_gradient_descent =<span class="st"> </span><span class="cf">function</span>(feature_matrix, output,</span>
-<span id="cb5-2"><a href="#cb5-2"></a>  initial_weights, step_size, tolerance) {</span>
-<span id="cb5-3"><a href="#cb5-3"></a>  converged =<span class="st"> </span><span class="ot">FALSE</span></span>
-<span id="cb5-4"><a href="#cb5-4"></a>  weights =<span class="st"> </span>initial_weights</span>
-<span id="cb5-5"><a href="#cb5-5"></a>  i =<span class="st"> </span><span class="dv">0</span></span>
-<span id="cb5-6"><a href="#cb5-6"></a>  <span class="cf">while</span> (<span class="op">!</span>converged) {</span>
-<span id="cb5-7"><a href="#cb5-7"></a>    predictions =<span class="st"> </span><span class="kw">predict_output</span>(feature_matrix, weights)</span>
-<span id="cb5-8"><a href="#cb5-8"></a>    errors =<span class="st"> </span>predictions <span class="op">-</span><span class="st"> </span>output</span>
-<span id="cb5-9"><a href="#cb5-9"></a>    gradient =<span class="st"> </span><span class="kw">featureDerivative</span>(errors, feature_matrix)</span>
-<span id="cb5-10"><a href="#cb5-10"></a>    gradient_norm =<span class="st"> </span><span class="kw">sqrt</span>(<span class="kw">sum</span>(gradient<span class="op">^</span><span class="dv">2</span>))</span>
-<span id="cb5-11"><a href="#cb5-11"></a>    weights =<span class="st"> </span>weights <span class="op">+</span><span class="st"> </span>step_size <span class="op">*</span><span class="st"> </span>gradient</span>
-<span id="cb5-12"><a href="#cb5-12"></a>    <span class="cf">if</span> (gradient_norm <span class="op">&lt;</span><span class="st"> </span>tolerance) {</span>
-<span id="cb5-13"><a href="#cb5-13"></a>    converged =<span class="st"> </span><span class="ot">TRUE</span></span>
-<span id="cb5-14"><a href="#cb5-14"></a>    }</span>
-<span id="cb5-15"><a href="#cb5-15"></a>    i =<span class="st"> </span>i <span class="op">+</span><span class="st"> </span><span class="dv">1</span></span>
-<span id="cb5-16"><a href="#cb5-16"></a>  }</span>
-<span id="cb5-17"><a href="#cb5-17"></a>  <span class="kw">return</span>(<span class="kw">list</span>(<span class="dt">weights =</span> weights, <span class="dt">Iters =</span> i))</span>
-<span id="cb5-18"><a href="#cb5-18"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a>regression_gradient_descent =<span class="st"> </span><span class="cf">function</span>(feature_matrix, output,</span>
+<span id="cb10-2"><a href="#cb10-2"></a>  initial_weights, step_size, tolerance) {</span>
+<span id="cb10-3"><a href="#cb10-3"></a>  converged =<span class="st"> </span><span class="ot">FALSE</span></span>
+<span id="cb10-4"><a href="#cb10-4"></a>  weights =<span class="st"> </span>initial_weights</span>
+<span id="cb10-5"><a href="#cb10-5"></a>  i =<span class="st"> </span><span class="dv">0</span></span>
+<span id="cb10-6"><a href="#cb10-6"></a>  <span class="cf">while</span> (<span class="op">!</span>converged) {</span>
+<span id="cb10-7"><a href="#cb10-7"></a>    predictions =<span class="st"> </span><span class="kw">predict_output</span>(feature_matrix, weights)</span>
+<span id="cb10-8"><a href="#cb10-8"></a>    errors =<span class="st"> </span>predictions <span class="op">-</span><span class="st"> </span>output</span>
+<span id="cb10-9"><a href="#cb10-9"></a>    gradient =<span class="st"> </span><span class="kw">featureDerivative</span>(errors, feature_matrix)</span>
+<span id="cb10-10"><a href="#cb10-10"></a>    gradient_norm =<span class="st"> </span><span class="kw">sqrt</span>(<span class="kw">sum</span>(gradient<span class="op">^</span><span class="dv">2</span>))</span>
+<span id="cb10-11"><a href="#cb10-11"></a>    weights =<span class="st"> </span>weights <span class="op">+</span><span class="st"> </span>step_size <span class="op">*</span><span class="st"> </span>gradient</span>
+<span id="cb10-12"><a href="#cb10-12"></a>    <span class="cf">if</span> (gradient_norm <span class="op">&lt;</span><span class="st"> </span>tolerance) {</span>
+<span id="cb10-13"><a href="#cb10-13"></a>    converged =<span class="st"> </span><span class="ot">TRUE</span></span>
+<span id="cb10-14"><a href="#cb10-14"></a>    }</span>
+<span id="cb10-15"><a href="#cb10-15"></a>    i =<span class="st"> </span>i <span class="op">+</span><span class="st"> </span><span class="dv">1</span></span>
+<span id="cb10-16"><a href="#cb10-16"></a>  }</span>
+<span id="cb10-17"><a href="#cb10-17"></a>  <span class="kw">return</span>(<span class="kw">list</span>(<span class="dt">weights =</span> weights, <span class="dt">Iters =</span> i))</span>
+<span id="cb10-18"><a href="#cb10-18"></a>}</span></code></pre></div>
 <p><br />
 </p>
 </div>
@@ -731,46 +767,55 @@ In order to minimize the the cost, <strong>tolerance</strong> is calculated as f
 <p>“kc_house_data.csv” file will be used - available at kaggle. It contains data about the houses sold in King County, Portland, Oregon from May 2014 to May 2015.<br />
 </p>
 <p><strong>STEPS</strong> to use gradient descent algorithm:<br />
+<br />
 </p>
 <ul>
 <li>select as dependent variable the <em>price</em> and as predictor the <em>sqft_living</em> and <em>bedrooms</em> values;</li>
 </ul>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1"></a>file_path =<span class="st"> &quot;./&quot;</span></span>
-<span id="cb6-2"><a href="#cb6-2"></a>kc_house_data &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="kw">paste</span>(file_path, <span class="st">&quot;kc_house_data.csv&quot;</span>,</span>
-<span id="cb6-3"><a href="#cb6-3"></a><span class="dt">sep =</span> <span class="st">&quot;&quot;</span>))</span>
-<span id="cb6-4"><a href="#cb6-4"></a>house_data &lt;-<span class="st"> </span>kc_house_data[, <span class="kw">c</span>(<span class="st">&quot;price&quot;</span>, <span class="st">&quot;bedrooms&quot;</span>, <span class="st">&quot;sqft_living&quot;</span>)]</span></code></pre></div>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>file_path =<span class="st"> &quot;./&quot;</span></span>
+<span id="cb11-2"><a href="#cb11-2"></a>kc_house_data &lt;-<span class="st"> </span><span class="kw">read.csv</span>(<span class="kw">paste</span>(file_path, <span class="st">&quot;kc_house_data.csv&quot;</span>,</span>
+<span id="cb11-3"><a href="#cb11-3"></a><span class="dt">sep =</span> <span class="st">&quot;&quot;</span>))</span>
+<span id="cb11-4"><a href="#cb11-4"></a>house_data &lt;-<span class="st"> </span>kc_house_data[, <span class="kw">c</span>(<span class="st">&quot;price&quot;</span>, <span class="st">&quot;bedrooms&quot;</span>, <span class="st">&quot;sqft_living&quot;</span>)]</span></code></pre></div>
+<p><br />
+</p>
 <ul>
 <li>split the data into <strong>train data</strong> and <strong>test data</strong>;</li>
 </ul>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1"></a><span class="kw">library</span>(caret)</span></code></pre></div>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a><span class="kw">library</span>(caret)</span></code></pre></div>
 <pre><code>## Loading required package: lattice</code></pre>
 <pre><code>## Loading required package: ggplot2</code></pre>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1"></a><span class="kw">set.seed</span>(<span class="dv">22</span>)</span>
-<span id="cb10-2"><a href="#cb10-2"></a>inTrain &lt;-<span class="st"> </span><span class="kw">createDataPartition</span>(house_data<span class="op">$</span>price, <span class="dt">p =</span> <span class="fl">0.5</span>, <span class="dt">list =</span> F)</span>
-<span id="cb10-3"><a href="#cb10-3"></a>house_train_data =<span class="st"> </span>house_data[inTrain,]</span>
-<span id="cb10-4"><a href="#cb10-4"></a>house_test_data =<span class="st"> </span>house_data[<span class="op">-</span>inTrain,]</span></code></pre></div>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a><span class="kw">set.seed</span>(<span class="dv">22</span>)</span>
+<span id="cb15-2"><a href="#cb15-2"></a>inTrain &lt;-<span class="st"> </span><span class="kw">createDataPartition</span>(house_data<span class="op">$</span>price, <span class="dt">p =</span> <span class="fl">0.5</span>, <span class="dt">list =</span> F)</span>
+<span id="cb15-3"><a href="#cb15-3"></a>house_train_data =<span class="st"> </span>house_data[inTrain,]</span>
+<span id="cb15-4"><a href="#cb15-4"></a>house_test_data =<span class="st"> </span>house_data[<span class="op">-</span>inTrain,]</span></code></pre></div>
+<p><br />
+</p>
 <ul>
-<li>define the <strong>features</strong> and the <strong>output</strong></li>
+<li>define the <strong>features</strong> and the <strong>output</strong>;</li>
 </ul>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1"></a>my_features &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;bedrooms&quot;</span>, <span class="st">&quot;sqft_living&quot;</span>)</span>
-<span id="cb11-2"><a href="#cb11-2"></a>my_output &lt;-<span class="st"> &quot;price&quot;</span></span></code></pre></div>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1"></a>my_features &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;bedrooms&quot;</span>, <span class="st">&quot;sqft_living&quot;</span>)</span>
+<span id="cb16-2"><a href="#cb16-2"></a>my_output &lt;-<span class="st"> &quot;price&quot;</span></span></code></pre></div>
+<p><br />
+</p>
 <ul>
 <li>construct <strong>feature matrix</strong> and <strong>output matrix</strong>; initialize the weights, step size and tolerance;</li>
 </ul>
-<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1"></a>feature_matrix =<span class="st"> </span><span class="kw">data_matrix</span>(house_train_data, my_features, my_output)[[<span class="dv">1</span>]]</span>
-<span id="cb12-2"><a href="#cb12-2"></a>output_matrix =<span class="st"> </span><span class="kw">data_matrix</span>(house_train_data, my_features, my_output)[[<span class="dv">2</span>]]</span>
-<span id="cb12-3"><a href="#cb12-3"></a>initial_weights =<span class="st"> </span><span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>)</span>
-<span id="cb12-4"><a href="#cb12-4"></a>step_size =<span class="st"> </span><span class="fl">0.01</span></span>
-<span id="cb12-5"><a href="#cb12-5"></a>tolerance =<span class="st"> </span><span class="fl">1e-5</span></span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a>feature_matrix =<span class="st"> </span><span class="kw">data_matrix</span>(house_train_data, my_features, my_output)[[<span class="dv">1</span>]]</span>
+<span id="cb17-2"><a href="#cb17-2"></a>output_matrix =<span class="st"> </span><span class="kw">data_matrix</span>(house_train_data, my_features, my_output)[[<span class="dv">2</span>]]</span>
+<span id="cb17-3"><a href="#cb17-3"></a>initial_weights =<span class="st"> </span><span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>)</span>
+<span id="cb17-4"><a href="#cb17-4"></a>step_size =<span class="st"> </span><span class="fl">0.01</span></span>
+<span id="cb17-5"><a href="#cb17-5"></a>tolerance =<span class="st"> </span><span class="fl">1e-5</span></span></code></pre></div>
+<p><br />
+</p>
 <ul>
 <li>run the gradient descent algorithm and find the feature weights;</li>
 </ul>
-<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1"></a>weights =<span class="st"> </span><span class="kw">regression_gradient_descent</span>(feature_matrix,</span>
-<span id="cb13-2"><a href="#cb13-2"></a>                                      output_matrix,</span>
-<span id="cb13-3"><a href="#cb13-3"></a>                                      initial_weights,</span>
-<span id="cb13-4"><a href="#cb13-4"></a>                                      step_size,</span>
-<span id="cb13-5"><a href="#cb13-5"></a>                                      tolerance)</span>
-<span id="cb13-6"><a href="#cb13-6"></a>weights</span></code></pre></div>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1"></a>weights =<span class="st"> </span><span class="kw">regression_gradient_descent</span>(feature_matrix,</span>
+<span id="cb18-2"><a href="#cb18-2"></a>                                      output_matrix,</span>
+<span id="cb18-3"><a href="#cb18-3"></a>                                      initial_weights,</span>
+<span id="cb18-4"><a href="#cb18-4"></a>                                      step_size,</span>
+<span id="cb18-5"><a href="#cb18-5"></a>                                      tolerance)</span>
+<span id="cb18-6"><a href="#cb18-6"></a>weights</span></code></pre></div>
 <pre><code>## $weights
 ##                     price
 ## Intercept    1.600084e-16
@@ -779,11 +824,13 @@ In order to minimize the the cost, <strong>tolerance</strong> is calculated as f
 ## 
 ## $Iters
 ## [1] 2296</code></pre>
+<p><br />
+</p>
 <ul>
 <li>check with <strong>OLS regressions</strong> in R</li>
 </ul>
-<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1"></a>scaled_house_data &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="kw">scale</span>(house_train_data))</span>
-<span id="cb15-2"><a href="#cb15-2"></a><span class="kw">lm</span>(price <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> scaled_house_data)<span class="op">$</span>coef</span></code></pre></div>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a>scaled_house_data &lt;-<span class="st"> </span><span class="kw">data.frame</span>(<span class="kw">scale</span>(house_train_data))</span>
+<span id="cb20-2"><a href="#cb20-2"></a><span class="kw">lm</span>(price <span class="op">~</span><span class="st"> </span>., <span class="dt">data =</span> scaled_house_data)<span class="op">$</span>coef</span></code></pre></div>
 <pre><code>##   (Intercept)      bedrooms   sqft_living 
 ##  9.399926e-17 -1.386672e-01  7.841524e-01</code></pre>
 <p><br />
@@ -807,30 +854,32 @@ gdescent(f, grad_f, X,y, alpha, iter, tol, …):<br />
 <li><p>tol: tolerance<br />
 </p></li>
 </ul>
-<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1"></a><span class="kw">library</span>(gettingtothebottom)</span></code></pre></div>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1"></a><span class="kw">library</span>(gettingtothebottom)</span></code></pre></div>
 <pre><code>## Loading required package: grid</code></pre>
 <pre><code>## Loading required package: Matrix</code></pre>
-<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1"></a>X &lt;-<span class="st"> </span><span class="kw">as.matrix</span>(feature_matrix[, <span class="dv">-1</span>])</span>
-<span id="cb20-2"><a href="#cb20-2"></a>y &lt;-<span class="st"> </span><span class="kw">as.vector</span>(output_matrix)</span>
-<span id="cb20-3"><a href="#cb20-3"></a></span>
-<span id="cb20-4"><a href="#cb20-4"></a><span class="co"># initialize the weights</span></span>
-<span id="cb20-5"><a href="#cb20-5"></a>b &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>)</span>
-<span id="cb20-6"><a href="#cb20-6"></a></span>
-<span id="cb20-7"><a href="#cb20-7"></a><span class="co"># define the objective function</span></span>
-<span id="cb20-8"><a href="#cb20-8"></a>f &lt;-<span class="st"> </span><span class="cf">function</span>(X, y, b) {</span>
-<span id="cb20-9"><a href="#cb20-9"></a>  (<span class="dv">1</span><span class="op">/</span><span class="dv">2</span>) <span class="op">*</span><span class="st"> </span><span class="kw">norm</span>(y <span class="op">-</span><span class="st"> </span>X <span class="op">%*%</span><span class="st"> </span>b, <span class="st">&quot;F&quot;</span>)<span class="op">^</span><span class="dv">2</span></span>
-<span id="cb20-10"><a href="#cb20-10"></a>}</span>
-<span id="cb20-11"><a href="#cb20-11"></a></span>
-<span id="cb20-12"><a href="#cb20-12"></a><span class="co"># Calculate gradient of the objective function</span></span>
-<span id="cb20-13"><a href="#cb20-13"></a>grad_f &lt;-<span class="st"> </span><span class="cf">function</span>(X, y, b) {</span>
-<span id="cb20-14"><a href="#cb20-14"></a>  <span class="kw">t</span>(X) <span class="op">%*%</span><span class="st"> </span>(X <span class="op">%*%</span><span class="st"> </span>b <span class="op">-</span><span class="st"> </span>y)</span>
-<span id="cb20-15"><a href="#cb20-15"></a>}</span></code></pre></div>
-<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1"></a>gradient_descent &lt;-<span class="st"> </span><span class="kw">gdescent</span>(f,</span>
-<span id="cb21-2"><a href="#cb21-2"></a>                             grad_f,</span>
-<span id="cb21-3"><a href="#cb21-3"></a>                             X, y,</span>
-<span id="cb21-4"><a href="#cb21-4"></a>                             <span class="dt">alpha =</span> <span class="fl">10e-5</span>,</span>
-<span id="cb21-5"><a href="#cb21-5"></a>                             <span class="dt">iter =</span> <span class="fl">10e7</span>,</span>
-<span id="cb21-6"><a href="#cb21-6"></a>                             <span class="dt">tol =</span> <span class="fl">1e-5</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1"></a>X &lt;-<span class="st"> </span><span class="kw">as.matrix</span>(feature_matrix[, <span class="dv">-1</span>])</span>
+<span id="cb25-2"><a href="#cb25-2"></a>y &lt;-<span class="st"> </span><span class="kw">as.vector</span>(output_matrix)</span>
+<span id="cb25-3"><a href="#cb25-3"></a></span>
+<span id="cb25-4"><a href="#cb25-4"></a><span class="co"># initialize the weights</span></span>
+<span id="cb25-5"><a href="#cb25-5"></a>b &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>)</span>
+<span id="cb25-6"><a href="#cb25-6"></a></span>
+<span id="cb25-7"><a href="#cb25-7"></a><span class="co"># define the objective function</span></span>
+<span id="cb25-8"><a href="#cb25-8"></a>f &lt;-<span class="st"> </span><span class="cf">function</span>(X, y, b) {</span>
+<span id="cb25-9"><a href="#cb25-9"></a>  (<span class="dv">1</span><span class="op">/</span><span class="dv">2</span>) <span class="op">*</span><span class="st"> </span><span class="kw">norm</span>(y <span class="op">-</span><span class="st"> </span>X <span class="op">%*%</span><span class="st"> </span>b, <span class="st">&quot;F&quot;</span>)<span class="op">^</span><span class="dv">2</span></span>
+<span id="cb25-10"><a href="#cb25-10"></a>}</span>
+<span id="cb25-11"><a href="#cb25-11"></a></span>
+<span id="cb25-12"><a href="#cb25-12"></a><span class="co"># Calculate gradient of the objective function</span></span>
+<span id="cb25-13"><a href="#cb25-13"></a>grad_f &lt;-<span class="st"> </span><span class="cf">function</span>(X, y, b) {</span>
+<span id="cb25-14"><a href="#cb25-14"></a>  <span class="kw">t</span>(X) <span class="op">%*%</span><span class="st"> </span>(X <span class="op">%*%</span><span class="st"> </span>b <span class="op">-</span><span class="st"> </span>y)</span>
+<span id="cb25-15"><a href="#cb25-15"></a>}</span></code></pre></div>
+<p><br />
+</p>
+<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a>gradient_descent &lt;-<span class="st"> </span><span class="kw">gdescent</span>(f,</span>
+<span id="cb26-2"><a href="#cb26-2"></a>                             grad_f,</span>
+<span id="cb26-3"><a href="#cb26-3"></a>                             X, y,</span>
+<span id="cb26-4"><a href="#cb26-4"></a>                             <span class="dt">alpha =</span> <span class="fl">10e-5</span>,</span>
+<span id="cb26-5"><a href="#cb26-5"></a>                             <span class="dt">iter =</span> <span class="fl">10e7</span>,</span>
+<span id="cb26-6"><a href="#cb26-6"></a>                             <span class="dt">tol =</span> <span class="fl">1e-5</span>)</span></code></pre></div>
 <pre><code>## Minimum function value:
 ##  2626.583
 ## 
@@ -850,54 +899,58 @@ gdescent(f, grad_f, X,y, alpha, iter, tol, …):<br />
 <li><p>low tolerance -&gt; might take a long time to converge<br />
 </p></li>
 </ul>
+<p><br />
+</p>
 </div>
 <div id="e-writing-the-stochastic-gradient-descent-application" class="section level3">
 <h3>e) Writing the Stochastic Gradient Descent Application</h3>
-<p>Stochastic Gradient Descent is used when dealing with large size data (e.g. m = 1e20). Unlike the batch gradient descent who goes through all the cases, Stochastic Gradient Descent selects randomly from the data set and starts modifying the parameters right away. The process is repeated until there are no more entries in the data set.<br />
+<p>Stochastic Gradient Descent is used when dealing with large size data (e.g. m = 1e20). Unlike the batch gradient descent which goes through all the cases, Stochastic Gradient Descent selects randomly from the data set and starts modifying the parameters right away. The process is repeated until there are no more entries in the data set.<br />
 </p>
 <p>Using the algorithm at from f) will take a long time to converge in this case.<br />
 </p>
-<p>The procedure is repeated by the number of iterations defined.</p>
-<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1"></a>sgd&lt;-<span class="cf">function</span>(x, y, betas, iters, lambda)</span>
-<span id="cb23-2"><a href="#cb23-2"></a>{</span>
-<span id="cb23-3"><a href="#cb23-3"></a>  beta&lt;-<span class="kw">as.matrix</span>(<span class="kw">cbind</span>(<span class="kw">rep</span>(betas[<span class="dv">1</span>], iters),</span>
-<span id="cb23-4"><a href="#cb23-4"></a>                  <span class="kw">rep</span>(betas[<span class="dv">2</span>], iters),</span>
-<span id="cb23-5"><a href="#cb23-5"></a>                  <span class="kw">rep</span>(betas[<span class="dv">3</span>],iters))</span>
-<span id="cb23-6"><a href="#cb23-6"></a>                 )</span>
-<span id="cb23-7"><a href="#cb23-7"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">2</span><span class="op">:</span>iters)</span>
-<span id="cb23-8"><a href="#cb23-8"></a>  {</span>
-<span id="cb23-9"><a href="#cb23-9"></a>    m &lt;-<span class="st"> </span><span class="kw">nrow</span>(x)</span>
-<span id="cb23-10"><a href="#cb23-10"></a>    sample_num &lt;-<span class="st"> </span><span class="kw">sample.int</span>(m, <span class="dv">1</span>)</span>
-<span id="cb23-11"><a href="#cb23-11"></a>    row_x &lt;-<span class="st"> </span>x[sample_num,]</span>
-<span id="cb23-12"><a href="#cb23-12"></a>    row_y &lt;-<span class="st"> </span>y[sample_num]</span>
-<span id="cb23-13"><a href="#cb23-13"></a>    beta[i, <span class="dv">1</span>] &lt;-<span class="st"> </span>beta[i<span class="dv">-1</span>, <span class="dv">1</span>] <span class="op">-</span><span class="st"> </span>(lambda<span class="op">*</span>(beta[i<span class="dv">-1</span>, <span class="dv">1</span>] <span class="op">+</span></span>
-<span id="cb23-14"><a href="#cb23-14"></a><span class="st">                                  </span>beta[i<span class="dv">-1</span>, <span class="dv">2</span>]<span class="op">*</span>row_x[[<span class="dv">1</span>]] <span class="op">+</span></span>
-<span id="cb23-15"><a href="#cb23-15"></a><span class="st">                                  </span>beta[i<span class="dv">-1</span>, <span class="dv">3</span>]<span class="op">*</span>row_x[[<span class="dv">2</span>]] <span class="op">-</span></span>
-<span id="cb23-16"><a href="#cb23-16"></a><span class="st">                                  </span>row_y)</span>
-<span id="cb23-17"><a href="#cb23-17"></a>                                 )</span>
-<span id="cb23-18"><a href="#cb23-18"></a>    beta[i, <span class="dv">2</span>] &lt;-<span class="st"> </span>beta[i<span class="dv">-1</span>, <span class="dv">2</span>] <span class="op">-</span><span class="st"> </span>(lambda<span class="op">*</span>(beta[i<span class="dv">-1</span>, <span class="dv">1</span>] <span class="op">+</span></span>
-<span id="cb23-19"><a href="#cb23-19"></a><span class="st">                                  </span>beta[i<span class="dv">-1</span>, <span class="dv">2</span>]<span class="op">*</span>row_x[[<span class="dv">1</span>]] <span class="op">+</span></span>
-<span id="cb23-20"><a href="#cb23-20"></a><span class="st">                                  </span>beta[i<span class="dv">-1</span>,<span class="dv">3</span>]<span class="op">*</span>row_x[[<span class="dv">2</span>]] <span class="op">-</span></span>
-<span id="cb23-21"><a href="#cb23-21"></a><span class="st">                                  </span>row_y)<span class="op">*</span>row_x[[<span class="dv">1</span>]]</span>
-<span id="cb23-22"><a href="#cb23-22"></a>                                 )</span>
-<span id="cb23-23"><a href="#cb23-23"></a>    beta[i, <span class="dv">3</span>] &lt;-<span class="st"> </span>beta[i<span class="dv">-1</span>,<span class="dv">3</span>] <span class="op">-</span><span class="st"> </span>lambda<span class="op">*</span>(beta[i<span class="dv">-1</span>, <span class="dv">1</span>] <span class="op">+</span></span>
-<span id="cb23-24"><a href="#cb23-24"></a><span class="st">                                        </span>beta[i<span class="dv">-1</span>, <span class="dv">2</span>]<span class="op">*</span>row_x[[<span class="dv">1</span>]] <span class="op">+</span></span>
-<span id="cb23-25"><a href="#cb23-25"></a><span class="st">                                        </span>beta[i<span class="dv">-1</span>,<span class="dv">3</span>]<span class="op">*</span>row_x[[<span class="dv">2</span>]] <span class="op">-</span></span>
-<span id="cb23-26"><a href="#cb23-26"></a><span class="st">                                        </span>row_y)<span class="op">*</span>row_x[[<span class="dv">2</span>]]</span>
-<span id="cb23-27"><a href="#cb23-27"></a>  }</span>
-<span id="cb23-28"><a href="#cb23-28"></a>  <span class="kw">return</span>(beta);</span>
-<span id="cb23-29"><a href="#cb23-29"></a>}</span></code></pre></div>
+<p>The procedure is repeated by the number of iterations defined.<br />
+<br />
+</p>
+<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1"></a>sgd&lt;-<span class="cf">function</span>(x, y, betas, iters, lambda)</span>
+<span id="cb28-2"><a href="#cb28-2"></a>{</span>
+<span id="cb28-3"><a href="#cb28-3"></a>  beta&lt;-<span class="kw">as.matrix</span>(<span class="kw">cbind</span>(<span class="kw">rep</span>(betas[<span class="dv">1</span>], iters),</span>
+<span id="cb28-4"><a href="#cb28-4"></a>                  <span class="kw">rep</span>(betas[<span class="dv">2</span>], iters),</span>
+<span id="cb28-5"><a href="#cb28-5"></a>                  <span class="kw">rep</span>(betas[<span class="dv">3</span>],iters))</span>
+<span id="cb28-6"><a href="#cb28-6"></a>                 )</span>
+<span id="cb28-7"><a href="#cb28-7"></a>  <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">2</span><span class="op">:</span>iters)</span>
+<span id="cb28-8"><a href="#cb28-8"></a>  {</span>
+<span id="cb28-9"><a href="#cb28-9"></a>    m &lt;-<span class="st"> </span><span class="kw">nrow</span>(x)</span>
+<span id="cb28-10"><a href="#cb28-10"></a>    sample_num &lt;-<span class="st"> </span><span class="kw">sample.int</span>(m, <span class="dv">1</span>)</span>
+<span id="cb28-11"><a href="#cb28-11"></a>    row_x &lt;-<span class="st"> </span>x[sample_num,]</span>
+<span id="cb28-12"><a href="#cb28-12"></a>    row_y &lt;-<span class="st"> </span>y[sample_num]</span>
+<span id="cb28-13"><a href="#cb28-13"></a>    beta[i, <span class="dv">1</span>] &lt;-<span class="st"> </span>beta[i<span class="dv">-1</span>, <span class="dv">1</span>] <span class="op">-</span><span class="st"> </span>(lambda<span class="op">*</span>(beta[i<span class="dv">-1</span>, <span class="dv">1</span>] <span class="op">+</span></span>
+<span id="cb28-14"><a href="#cb28-14"></a><span class="st">                                  </span>beta[i<span class="dv">-1</span>, <span class="dv">2</span>]<span class="op">*</span>row_x[[<span class="dv">1</span>]] <span class="op">+</span></span>
+<span id="cb28-15"><a href="#cb28-15"></a><span class="st">                                  </span>beta[i<span class="dv">-1</span>, <span class="dv">3</span>]<span class="op">*</span>row_x[[<span class="dv">2</span>]] <span class="op">-</span></span>
+<span id="cb28-16"><a href="#cb28-16"></a><span class="st">                                  </span>row_y)</span>
+<span id="cb28-17"><a href="#cb28-17"></a>                                 )</span>
+<span id="cb28-18"><a href="#cb28-18"></a>    beta[i, <span class="dv">2</span>] &lt;-<span class="st"> </span>beta[i<span class="dv">-1</span>, <span class="dv">2</span>] <span class="op">-</span><span class="st"> </span>(lambda<span class="op">*</span>(beta[i<span class="dv">-1</span>, <span class="dv">1</span>] <span class="op">+</span></span>
+<span id="cb28-19"><a href="#cb28-19"></a><span class="st">                                  </span>beta[i<span class="dv">-1</span>, <span class="dv">2</span>]<span class="op">*</span>row_x[[<span class="dv">1</span>]] <span class="op">+</span></span>
+<span id="cb28-20"><a href="#cb28-20"></a><span class="st">                                  </span>beta[i<span class="dv">-1</span>,<span class="dv">3</span>]<span class="op">*</span>row_x[[<span class="dv">2</span>]] <span class="op">-</span></span>
+<span id="cb28-21"><a href="#cb28-21"></a><span class="st">                                  </span>row_y)<span class="op">*</span>row_x[[<span class="dv">1</span>]]</span>
+<span id="cb28-22"><a href="#cb28-22"></a>                                 )</span>
+<span id="cb28-23"><a href="#cb28-23"></a>    beta[i, <span class="dv">3</span>] &lt;-<span class="st"> </span>beta[i<span class="dv">-1</span>,<span class="dv">3</span>] <span class="op">-</span><span class="st"> </span>lambda<span class="op">*</span>(beta[i<span class="dv">-1</span>, <span class="dv">1</span>] <span class="op">+</span></span>
+<span id="cb28-24"><a href="#cb28-24"></a><span class="st">                                        </span>beta[i<span class="dv">-1</span>, <span class="dv">2</span>]<span class="op">*</span>row_x[[<span class="dv">1</span>]] <span class="op">+</span></span>
+<span id="cb28-25"><a href="#cb28-25"></a><span class="st">                                        </span>beta[i<span class="dv">-1</span>,<span class="dv">3</span>]<span class="op">*</span>row_x[[<span class="dv">2</span>]] <span class="op">-</span></span>
+<span id="cb28-26"><a href="#cb28-26"></a><span class="st">                                        </span>row_y)<span class="op">*</span>row_x[[<span class="dv">2</span>]]</span>
+<span id="cb28-27"><a href="#cb28-27"></a>  }</span>
+<span id="cb28-28"><a href="#cb28-28"></a>  <span class="kw">return</span>(beta);</span>
+<span id="cb28-29"><a href="#cb28-29"></a>}</span></code></pre></div>
 <p><br />
 </p>
-<div class="sourceCode" id="cb24"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb24-1"><a href="#cb24-1"></a>betas =<span class="st"> </span><span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>)</span>
-<span id="cb24-2"><a href="#cb24-2"></a>iters =<span class="st"> </span><span class="dv">3000</span></span>
-<span id="cb24-3"><a href="#cb24-3"></a>lambda =<span class="st"> </span><span class="fl">0.0001</span></span>
-<span id="cb24-4"><a href="#cb24-4"></a>weights =<span class="st"> </span><span class="kw">sgd</span>(feature_matrix[, <span class="dv">-1</span>],</span>
-<span id="cb24-5"><a href="#cb24-5"></a>              output_matrix,</span>
-<span id="cb24-6"><a href="#cb24-6"></a>              betas,</span>
-<span id="cb24-7"><a href="#cb24-7"></a>              <span class="dt">iters =</span> iters,</span>
-<span id="cb24-8"><a href="#cb24-8"></a>              <span class="dt">lambda =</span> lambda)</span>
-<span id="cb24-9"><a href="#cb24-9"></a>weights[<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>,]</span></code></pre></div>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1"></a>betas =<span class="st"> </span><span class="kw">c</span>(<span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>)</span>
+<span id="cb29-2"><a href="#cb29-2"></a>iters =<span class="st"> </span><span class="dv">3000</span></span>
+<span id="cb29-3"><a href="#cb29-3"></a>lambda =<span class="st"> </span><span class="fl">0.0001</span></span>
+<span id="cb29-4"><a href="#cb29-4"></a>weights =<span class="st"> </span><span class="kw">sgd</span>(feature_matrix[, <span class="dv">-1</span>],</span>
+<span id="cb29-5"><a href="#cb29-5"></a>              output_matrix,</span>
+<span id="cb29-6"><a href="#cb29-6"></a>              betas,</span>
+<span id="cb29-7"><a href="#cb29-7"></a>              <span class="dt">iters =</span> iters,</span>
+<span id="cb29-8"><a href="#cb29-8"></a>              <span class="dt">lambda =</span> lambda)</span>
+<span id="cb29-9"><a href="#cb29-9"></a>weights[<span class="dv">1</span><span class="op">:</span><span class="dv">10</span>,]</span></code></pre></div>
 <pre><code>##                [,1]         [,2]         [,3]
 ##  [1,]  0.000000e+00 0.0000000000 0.000000e+00
 ##  [2,] -8.420339e-05 0.0001226882 7.720778e-05
@@ -926,9 +979,10 @@ gdescent(f, grad_f, X,y, alpha, iter, tol, …):<br />
 <h3>a) <strong>Linear Relationship</strong></h3>
 <p>between the response and the predictors; the values of the residuals and the predicted can be plotted to best see the relationship. Non-linearity can be detected if there is any particular pattern in the plot, but is not always the case (see <strong>5.2</strong> where the plot between fitted values and the residuals of the polynomial regression model does not show any pattern)</p>
 Non-linearity <strong>example</strong> for the regression model:<br />
+<br />
 
 <center>
-<span class="math inline">\(y = w_0 + w_1x_1+w_2x_2+...+w_5x_5\)</span>
+<span class="math inline">\(y = w_0 + w_1x+w_2x^2+...+w_5x^5\)</span>
 </center>
 <p><br />
 </p>
@@ -945,11 +999,11 @@ Non-linearity <strong>example</strong> for the regression model:<br />
 <p><br />
 <br />
 </p>
-<div class="sourceCode" id="cb26"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1"></a><span class="co"># mean(fit$residuals)</span></span></code></pre></div>
 </div>
 <div id="b-residuals-have-zero-mean" class="section level3">
 <h3>b) <strong>Residuals have zero mean</strong></h3>
-<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1"></a><span class="co"># mean(fit$residuals)</span></span></code></pre></div>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1"></a><span class="co"># mean(fit$residuals)</span></span></code></pre></div>
+<p>[1] -1.404042e-19</p>
 <p><br />
 </p>
 </div>
@@ -957,7 +1011,8 @@ Non-linearity <strong>example</strong> for the regression model:<br />
 <h3>c) <strong>No autocorrelation of residuals:</strong></h3>
 <p>The correlation occurs usually when dealing with <em>time series</em> data. “<strong>The null hypothesis autocorrelation of the residuals is 0</strong>” can be tested as below.<br />
 </p>
-<div class="sourceCode" id="cb28"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1"></a><span class="co"># (lmtest::dwtest(fit))$p.value</span></span></code></pre></div>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1"></a><span class="co"># (lmtest::dwtest(fit))$p.value</span></span></code></pre></div>
+<p>[1] 0.3654994</p>
 <p><br />
 </p>
 <p>If p-value is grater than 0.05, then the null hypothesis autocorrelation of the residuals is 0 is accepted.</p>
@@ -992,10 +1047,10 @@ Example of Homoscedasticity in image 5.2.<br />
 <p><strong>EXAMPLE</strong> with car package:<br />
 <br />
 </p>
-<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1"></a><span class="kw">library</span>(<span class="st">&quot;car&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1"></a><span class="kw">library</span>(<span class="st">&quot;car&quot;</span>)</span></code></pre></div>
 <pre><code>## Loading required package: carData</code></pre>
-<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1"></a>fit &lt;-<span class="st"> </span><span class="kw">lm</span>(Employed<span class="op">~</span><span class="st"> </span>GNP <span class="op">+</span><span class="st"> </span>Year, <span class="dt">data =</span> longley)</span>
-<span id="cb31-2"><a href="#cb31-2"></a>car<span class="op">::</span><span class="kw">vif</span>(fit)</span></code></pre></div>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1"></a>fit &lt;-<span class="st"> </span><span class="kw">lm</span>(Employed<span class="op">~</span><span class="st"> </span>GNP <span class="op">+</span><span class="st"> </span>Year, <span class="dt">data =</span> longley)</span>
+<span id="cb35-2"><a href="#cb35-2"></a>car<span class="op">::</span><span class="kw">vif</span>(fit)</span></code></pre></div>
 <pre><code>##      GNP     Year 
 ## 106.0368 106.0368</code></pre>
 <p><br />
@@ -1015,8 +1070,8 @@ Example of Homoscedasticity in image 5.2.<br />
 </center>
 <p><br />
 Using the <em>findCorrelation</em> function (caret package), highly correlated variables can be found. </p>
-<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1"></a>highlyCorrelated &lt;-<span class="st"> </span><span class="kw">findCorrelation</span>(<span class="kw">cor</span>(longley), <span class="dt">cutoff=</span><span class="fl">0.7</span>)</span>
-<span id="cb33-2"><a href="#cb33-2"></a><span class="kw">colnames</span>(longley)[highlyCorrelated]</span></code></pre></div>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1"></a>highlyCorrelated &lt;-<span class="st"> </span><span class="kw">findCorrelation</span>(<span class="kw">cor</span>(longley), <span class="dt">cutoff=</span><span class="fl">0.7</span>)</span>
+<span id="cb37-2"><a href="#cb37-2"></a><span class="kw">colnames</span>(longley)[highlyCorrelated]</span></code></pre></div>
 <pre><code>## [1] &quot;Year&quot;         &quot;GNP.deflator&quot; &quot;GNP&quot;          &quot;Population&quot;</code></pre>
 <p><br />
 </p>
@@ -1033,11 +1088,13 @@ Using the <em>findCorrelation</em> function (caret package), highly correlated v
 <br />
 </p></li>
 </ul>
-<div id="a-t-value-the-number-of-the-standard-deviations-between-the-estimated-coefficient-from-the-original-value-of-0." class="section level3">
-<h3>a) ** t value** = the number of the standard deviations between the estimated coefficient from the original value of 0.<br />
-</h3>
-<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1"></a>model &lt;-<span class="st"> </span><span class="kw">lm</span>(price <span class="op">~</span><span class="st"> </span>sqft_living <span class="op">+</span><span class="st"> </span>bedrooms, <span class="dt">data =</span> kc_house_data)</span>
-<span id="cb35-2"><a href="#cb35-2"></a>model</span></code></pre></div>
+<div id="a-t-value" class="section level3">
+<h3>a) <strong>t value</strong></h3>
+<p><br />
+= the number of the standard deviations between the estimated coefficient from the original value of 0.<br />
+</p>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1"></a>model &lt;-<span class="st"> </span><span class="kw">lm</span>(price <span class="op">~</span><span class="st"> </span>sqft_living <span class="op">+</span><span class="st"> </span>bedrooms, <span class="dt">data =</span> kc_house_data)</span>
+<span id="cb39-2"><a href="#cb39-2"></a>model</span></code></pre></div>
 <pre><code>## 
 ## Call:
 ## lm(formula = price ~ sqft_living + bedrooms, data = kc_house_data)
@@ -1045,8 +1102,8 @@ Using the <em>findCorrelation</em> function (caret package), highly correlated v
 ## Coefficients:
 ## (Intercept)  sqft_living     bedrooms  
 ##     79469.4        313.9     -57066.8</code></pre>
-<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1"></a>t_value &lt;-<span class="st"> </span>model<span class="op">$</span>coef <span class="op">/</span><span class="st"> </span><span class="kw">coef</span>(<span class="kw">summary</span>(model))[, <span class="st">&quot;Std. Error&quot;</span>]</span>
-<span id="cb37-2"><a href="#cb37-2"></a>t_value</span></code></pre></div>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1"></a>t_value &lt;-<span class="st"> </span>model<span class="op">$</span>coef <span class="op">/</span><span class="st"> </span><span class="kw">coef</span>(<span class="kw">summary</span>(model))[, <span class="st">&quot;Std. Error&quot;</span>]</span>
+<span id="cb41-2"><a href="#cb41-2"></a>t_value</span></code></pre></div>
 <pre><code>## (Intercept) sqft_living    bedrooms 
 ##    12.03213   134.31369   -24.72324</code></pre>
 <p><br />
@@ -1057,16 +1114,16 @@ If <strong>t_value</strong> is high that means the feature could have a nonzero 
 <h3>b) <strong>p-value</strong></h3>
 <p>= converts the t_value into probabilities. The probabilities are used to determine “how likely is the coefficient to be equal to zero instead of the current value of the estimate”.<br />
 </p>
-<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1"></a><span class="co"># Find degree of freedom</span></span>
-<span id="cb39-2"><a href="#cb39-2"></a>dof &lt;-<span class="st"> </span><span class="kw">nrow</span>(kc_house_data) <span class="op">-</span><span class="st"> </span><span class="kw">length</span>(model<span class="op">$</span>coef <span class="op">+</span><span class="st"> </span><span class="dv">1</span>)</span>
-<span id="cb39-3"><a href="#cb39-3"></a><span class="co"># 1 is added to include the Intercept term</span></span>
-<span id="cb39-4"><a href="#cb39-4"></a>dof</span></code></pre></div>
+<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1"></a><span class="co"># Find degree of freedom</span></span>
+<span id="cb43-2"><a href="#cb43-2"></a>dof &lt;-<span class="st"> </span><span class="kw">nrow</span>(kc_house_data) <span class="op">-</span><span class="st"> </span><span class="kw">length</span>(model<span class="op">$</span>coef <span class="op">+</span><span class="st"> </span><span class="dv">1</span>)</span>
+<span id="cb43-3"><a href="#cb43-3"></a><span class="co"># 1 is added to include the Intercept term</span></span>
+<span id="cb43-4"><a href="#cb43-4"></a>dof</span></code></pre></div>
 <pre><code>## [1] 21610</code></pre>
-<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1"></a><span class="co"># converting the t value into absolute values </span></span>
-<span id="cb41-2"><a href="#cb41-2"></a><span class="co"># calculate the upper tail of the distribution </span></span>
-<span id="cb41-3"><a href="#cb41-3"></a><span class="co"># multiply it by 2</span></span>
-<span id="cb41-4"><a href="#cb41-4"></a><span class="co"># “pt” - calculates the quantile of the t-distribution</span></span>
-<span id="cb41-5"><a href="#cb41-5"></a><span class="kw">pt</span>(<span class="kw">abs</span>(<span class="kw">coef</span>(<span class="kw">summary</span>(model))[, <span class="st">&quot;t value&quot;</span>]), <span class="dt">df =</span> dof, <span class="dt">lower.tail =</span> <span class="ot">FALSE</span>) <span class="op">*</span><span class="st"> </span><span class="dv">2</span></span></code></pre></div>
+<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1"></a><span class="co"># converting the t value into absolute values </span></span>
+<span id="cb45-2"><a href="#cb45-2"></a><span class="co"># calculate the upper tail of the distribution </span></span>
+<span id="cb45-3"><a href="#cb45-3"></a><span class="co"># multiply it by 2</span></span>
+<span id="cb45-4"><a href="#cb45-4"></a><span class="co"># “pt” - calculates the quantile of the t-distribution</span></span>
+<span id="cb45-5"><a href="#cb45-5"></a><span class="kw">pt</span>(<span class="kw">abs</span>(<span class="kw">coef</span>(<span class="kw">summary</span>(model))[, <span class="st">&quot;t value&quot;</span>]), <span class="dt">df =</span> dof, <span class="dt">lower.tail =</span> <span class="ot">FALSE</span>) <span class="op">*</span><span class="st"> </span><span class="dv">2</span></span></code></pre></div>
 <pre><code>##   (Intercept)   sqft_living      bedrooms 
 ##  3.076594e-33  0.000000e+00 4.244531e-133</code></pre>
 <p><br />
@@ -1082,19 +1139,19 @@ If <strong>p-value</strong> is high that means the feature doesn’t provide new
 <p><span class="math inline">\(R^2 = 1 - \frac{RSS}{TSS} = 1 - \frac{\sum\limits_{i=1}^{n}(y_i-\hat{y}_i)^2}{\sum\limits_{i=1}^{n}()y_i-\bar{y})^2}\)</span><br />
 <br />
 </p>
-<div class="sourceCode" id="cb43"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1"></a><span class="co"># define function</span></span>
-<span id="cb43-2"><a href="#cb43-2"></a>Rsquared &lt;-<span class="st"> </span><span class="cf">function</span>(y, yhat)</span>
-<span id="cb43-3"><a href="#cb43-3"></a>{</span>
-<span id="cb43-4"><a href="#cb43-4"></a>  rss &lt;-<span class="st"> </span><span class="kw">sum</span>( (y <span class="op">-</span><span class="st"> </span>yhat)<span class="op">^</span><span class="dv">2</span> )</span>
-<span id="cb43-5"><a href="#cb43-5"></a>  tss &lt;-<span class="st"> </span><span class="kw">sum</span>( ( y <span class="op">-</span><span class="st"> </span><span class="kw">mean</span>(y) )<span class="op">^</span><span class="dv">2</span> )</span>
-<span id="cb43-6"><a href="#cb43-6"></a>  <span class="kw">return</span>( <span class="dv">1</span> <span class="op">-</span><span class="st"> </span>rss <span class="op">/</span><span class="st"> </span>tss )</span>
-<span id="cb43-7"><a href="#cb43-7"></a>}</span>
-<span id="cb43-8"><a href="#cb43-8"></a></span>
-<span id="cb43-9"><a href="#cb43-9"></a><span class="co"># R-square in R is:</span></span>
-<span id="cb43-10"><a href="#cb43-10"></a><span class="kw">summary</span>(model)<span class="op">$</span>r.squared</span></code></pre></div>
+<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1"></a><span class="co"># define function</span></span>
+<span id="cb47-2"><a href="#cb47-2"></a>Rsquared &lt;-<span class="st"> </span><span class="cf">function</span>(y, yhat)</span>
+<span id="cb47-3"><a href="#cb47-3"></a>{</span>
+<span id="cb47-4"><a href="#cb47-4"></a>  rss &lt;-<span class="st"> </span><span class="kw">sum</span>( (y <span class="op">-</span><span class="st"> </span>yhat)<span class="op">^</span><span class="dv">2</span> )</span>
+<span id="cb47-5"><a href="#cb47-5"></a>  tss &lt;-<span class="st"> </span><span class="kw">sum</span>( ( y <span class="op">-</span><span class="st"> </span><span class="kw">mean</span>(y) )<span class="op">^</span><span class="dv">2</span> )</span>
+<span id="cb47-6"><a href="#cb47-6"></a>  <span class="kw">return</span>( <span class="dv">1</span> <span class="op">-</span><span class="st"> </span>rss <span class="op">/</span><span class="st"> </span>tss )</span>
+<span id="cb47-7"><a href="#cb47-7"></a>}</span>
+<span id="cb47-8"><a href="#cb47-8"></a></span>
+<span id="cb47-9"><a href="#cb47-9"></a><span class="co"># R-square in R is:</span></span>
+<span id="cb47-10"><a href="#cb47-10"></a><span class="kw">summary</span>(model)<span class="op">$</span>r.squared</span></code></pre></div>
 <pre><code>## [1] 0.5068033</code></pre>
-<div class="sourceCode" id="cb45"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1"></a><span class="co"># using the defined function:</span></span>
-<span id="cb45-2"><a href="#cb45-2"></a><span class="kw">Rsquared</span>(kc_house_data<span class="op">$</span>price, model<span class="op">$</span>fitted.values)</span></code></pre></div>
+<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1"></a><span class="co"># using the defined function:</span></span>
+<span id="cb49-2"><a href="#cb49-2"></a><span class="kw">Rsquared</span>(kc_house_data<span class="op">$</span>price, model<span class="op">$</span>fitted.values)</span></code></pre></div>
 <pre><code>## [1] 0.5068033</code></pre>
 <p><br />
 </p>
@@ -1102,24 +1159,27 @@ If <strong>p-value</strong> is high that means the feature doesn’t provide new
 <br />
 </p>
 </div>
-<div id="e-adjusted-r-square---the-r-square-is-adjusted-based-on-the-complexity-of-the-model.-r-squared-value-goes-up-if-more-variables-are-included-even-if-the-are-redundant-dont-contribute" class="section level3">
-<h3>e) <strong>Adjusted R Square</strong> - the R-square is adjusted based on the complexity of the model. R-squared value goes up if more variables are included, even if the are redundant (don’t contribute</h3>
-<p>towards explaining the response).<br />
-</p>
-<div class="sourceCode" id="cb47"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1"></a><span class="co"># define function</span></span>
-<span id="cb47-2"><a href="#cb47-2"></a>k &lt;-<span class="st"> </span><span class="kw">length</span>(model<span class="op">$</span>coef) <span class="co"># Intercept term is not included</span></span>
-<span id="cb47-3"><a href="#cb47-3"></a>adjustedRSquared &lt;-<span class="st"> </span><span class="cf">function</span>(y, yhat, k)</span>
-<span id="cb47-4"><a href="#cb47-4"></a>{</span>
-<span id="cb47-5"><a href="#cb47-5"></a>  n &lt;-<span class="st"> </span><span class="kw">length</span>(y)</span>
-<span id="cb47-6"><a href="#cb47-6"></a>  r2 &lt;-<span class="st"> </span><span class="kw">Rsquared</span>(y, yhat)</span>
-<span id="cb47-7"><a href="#cb47-7"></a>  <span class="kw">return</span>( <span class="dv">1</span> <span class="op">-</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">-</span><span class="st"> </span>r2) <span class="op">*</span><span class="st"> </span>(n <span class="op">-</span><span class="st"> </span><span class="dv">1</span>) <span class="op">/</span><span class="st"> </span>(n <span class="op">-</span><span class="st"> </span>k <span class="op">-</span><span class="st"> </span><span class="dv">1</span>) )</span>
-<span id="cb47-8"><a href="#cb47-8"></a>}</span>
-<span id="cb47-9"><a href="#cb47-9"></a></span>
-<span id="cb47-10"><a href="#cb47-10"></a><span class="co"># adjusted R-square in R:</span></span>
-<span id="cb47-11"><a href="#cb47-11"></a><span class="kw">summary</span>(model)<span class="op">$</span>adj.r.squared</span></code></pre></div>
+<div id="e-adjusted-r-square" class="section level3">
+<h3>e) <strong>Adjusted R Square</strong><br />
+</h3>
+<ul>
+<li>the R-square is adjusted based on the complexity of the model. R-squared value goes up if more variables are included, even if the are redundant (don’t contribute towards explaining the response).<br />
+</li>
+</ul>
+<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1"></a><span class="co"># define function</span></span>
+<span id="cb51-2"><a href="#cb51-2"></a>k &lt;-<span class="st"> </span><span class="kw">length</span>(model<span class="op">$</span>coef) <span class="co"># Intercept term is not included</span></span>
+<span id="cb51-3"><a href="#cb51-3"></a>adjustedRSquared &lt;-<span class="st"> </span><span class="cf">function</span>(y, yhat, k)</span>
+<span id="cb51-4"><a href="#cb51-4"></a>{</span>
+<span id="cb51-5"><a href="#cb51-5"></a>  n &lt;-<span class="st"> </span><span class="kw">length</span>(y)</span>
+<span id="cb51-6"><a href="#cb51-6"></a>  r2 &lt;-<span class="st"> </span><span class="kw">Rsquared</span>(y, yhat)</span>
+<span id="cb51-7"><a href="#cb51-7"></a>  <span class="kw">return</span>( <span class="dv">1</span> <span class="op">-</span><span class="st"> </span>(<span class="dv">1</span> <span class="op">-</span><span class="st"> </span>r2) <span class="op">*</span><span class="st"> </span>(n <span class="op">-</span><span class="st"> </span><span class="dv">1</span>) <span class="op">/</span><span class="st"> </span>(n <span class="op">-</span><span class="st"> </span>k <span class="op">-</span><span class="st"> </span><span class="dv">1</span>) )</span>
+<span id="cb51-8"><a href="#cb51-8"></a>}</span>
+<span id="cb51-9"><a href="#cb51-9"></a></span>
+<span id="cb51-10"><a href="#cb51-10"></a><span class="co"># adjusted R-square in R:</span></span>
+<span id="cb51-11"><a href="#cb51-11"></a><span class="kw">summary</span>(model)<span class="op">$</span>adj.r.squared</span></code></pre></div>
 <pre><code>## [1] 0.5067576</code></pre>
-<div class="sourceCode" id="cb49"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1"></a><span class="co"># using the defined function:</span></span>
-<span id="cb49-2"><a href="#cb49-2"></a><span class="kw">adjustedRSquared</span>( kc_house_data<span class="op">$</span>price, model<span class="op">$</span>fitted.values, k )</span></code></pre></div>
+<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1"></a><span class="co"># using the defined function:</span></span>
+<span id="cb53-2"><a href="#cb53-2"></a><span class="kw">adjustedRSquared</span>( kc_house_data<span class="op">$</span>price, model<span class="op">$</span>fitted.values, k )</span></code></pre></div>
 <pre><code>## [1] 0.5067348</code></pre>
 <p><br />
 </p>

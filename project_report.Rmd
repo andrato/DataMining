@@ -13,16 +13,18 @@ output:
 ```{r setup, include = FALSE}
 knitr::opts_chunk$set(include = TRUE, echo = TRUE)
 ```
+\
 
 ## **1. Linear Regression**
 **Univariate linear regression/simple linear regression** is a linear regression with one variable x. It is an example of **supervised learning** where the output values are known in the training data. In simple linear regression, for each input is predicted a single output.\
+\
 
 ### a) Hypothesis Function
 **Multivariate linear regression/multiple linear regression** is a linear regression with many variables x.
 
 **The hypothesis function:**\
 <center>
-$RSS(w) = w_0 + w_1x_1 + ... +w_nx_n + \epsilon = \sum\limits_{j=0}^{n}(w_jx_j) + \epsilon$\
+$h_w(x) = w_0 + w_1x_1 + ... +w_nx_n + \epsilon = \sum\limits_{j=0}^{n}(w_jx_j) + \epsilon$\
 <!-- A. Ghatak, Machine Learning with R -->
 </center>
 
@@ -40,7 +42,7 @@ Fig.1\
 - green line = regression line\
 - blue line = error (the difference between the actual values and the predicted values)
 </center>
-
+\
 
 ### b) Cost Function
 For each $w_0,w_1...w_n$ there is a regression line. It should be found a single regression line which minimizes the cost function. The one in this case is the **residual sum of squares (RSS)**.
@@ -90,7 +92,7 @@ $\frac{\partial RSS}{\partial w_1} = 0 => 0 = \sum\limits_{i=1}^{m}y_ix_i - \sum
 <!--
 $w_1\sum\limits_{i=1}^{m}x_i^2 = \sum\limits_{i=1}^{m}y_ix_i- \frac{\sum\limits_{i=1}^{m}y_i\sum\limits_{i=1}^{m}x_i}{m} - w_1\frac{(\sum\limits_{i=1}^{m}x_i)^2}{m} $\
 -->
-$w_1 = \frac{\sum\limits_{i=1}^{m}(y_ix_i) -\frac{\sum\limits_{i=1}^{m}y_i\sum\limits_{i=1}^{m}x_i}{m}}{\sum\limits_{i=1}^{m}x_i^2 - \frac{(\sum\limits_{i=1}^{m}x_i)^2}{m}}$ 
+$w_1 = \frac{\sum\limits_{i=1}^{m}(y_ix_i) -\frac{\sum\limits_{i=1}^{m}y_i\sum\limits_{i=1}^{m}x_i}{m}}{\sum\limits_{i=1}^{m}x_i^2 - \frac{(\sum\limits_{i=1}^{m}x_i)^2}{m}}$  **(B)**
 
 \
 \
@@ -114,6 +116,14 @@ y <- (y + eps)
 OLS_coef <- solve(t(X) %*% X) %*% t(X) %*% y
 lm_coef <- lm(y~X)$coef
 
+m <- cbind(OLS_coef,lm_coef)
+
+mat <- matrix(m, nrow=2, byrow = TRUE) 
+colnames(mat, do.NULL = FALSE)
+colnames(mat) <- c("OLS_coef", "lm_coef")
+rownames(mat) <- c("Intercept(w0)", "w1")
+# print matrix 
+print(mat)
 ```
 
 
@@ -159,15 +169,19 @@ In conclusion, as is stated by Abhijit Ghatak, "maximizing the log-likelihood wi
 Gradient descent is an algorithm which **finds the lowest MSE**. It consists in trying to find the weights/parameters which will lead to the **minimum cost**. \
 
 The following steps show how the minimum cost by using gradient descent.\
+\
 
-### a) Hypothesis Function
+### a) Hypothesis Function\
+
 <center>
 $\frac{\partial}{\partial w}(RSS(w)) = \frac{\partial}{\partial w}(\frac{1}{2m}\sum\limits_{i=1}^{m}{(y^{(i)}-h_w(x^{(i)})^2)} = -\frac{1}{m}\sum\limits_{i=1}^{m}(y^{(i)}-h_w(x^{(i)}))x^{(i)}$\
 \
 $\frac{\partial}{\partial w}(RSS(w)) = -2H^T(y-H_w)$
 </center>
+\
 
-### b) Closed Form Solution
+### b) Closed Form Solution\
+
 <center>
 $\frac{\partial}{\partial w}(RSS(w)) = -2H^T(y-H_w) = 0$
 </center>
@@ -176,8 +190,10 @@ Result after using the method of ordinary least squares:
 <center>
 $\hat{w}=(H^TH)^{-1}(H^T)y$
 </center>
+\
 
-### c) Step-by-Step Batch Gradient Descent
+### c) Step-by-Step Batch Gradient Descent\
+
 The procedure consists in updating the weights with every input:
 <center>
 ![](D:\MasterInfo\AN1-SEM1\DataMining\DataMining\Images\4.4.3.png)\
@@ -193,10 +209,10 @@ In order to minimize the the cost, **tolerance** is calculated as follow:
 
 \
 
-### d) Writing the Batch Gradient Descent Application
-In order to write the the Batch Gradient Descent application, four functions need to be defined:
+### d) Writing the Batch Gradient Descent Application\
+In order to write the the Batch Gradient Descent application, four functions need to be defined:\
 
-- **data_matrix** - receives the features and scales them before returning the matrix and output; this will help further in the gradient descent algorithm (ensure faster convergence)
+- **data_matrix** - receives the features and scales them before returning the matrix and output; this will help further in the gradient descent algorithm (ensure faster convergence)\
 
 ```{r}
 data_matrix <- function(data, features, output){
@@ -208,6 +224,7 @@ data_matrix <- function(data, features, output){
   return(list(scaled_features, output))
 }
 ```
+\
 
 - **predict_output** - receives the features and weights (for each feature) and returns the predictions.
 ```{r}
@@ -216,6 +233,7 @@ predict_output = function(feature_matrix, weights) {
   return(predictions)
 }
 ```
+\
 
 - **featureDerivative** - calculates the RSS gradient at each feature
 
@@ -225,6 +243,7 @@ featureDerivative = function(errors, features) {
   return(derivative)
 }
 ```
+\
 
 - **regression_gradient_descent** - the function which executes the algorithm described above (c); it returns the computed weights (for each feature) and the number of steps it took to converge.
 
@@ -258,6 +277,7 @@ data about the houses sold in King County, Portland, Oregon from May 2014 to May
 \
 
 **STEPS** to use gradient descent algorithm:\
+\
 
 - select as dependent variable the *price* and as predictor the *sqft_living* and *bedrooms* values;
 
@@ -267,6 +287,8 @@ kc_house_data <- read.csv(paste(file_path, "kc_house_data.csv",
 sep = ""))
 house_data <- kc_house_data[, c("price", "bedrooms", "sqft_living")]
 ```
+\
+
 
 - split the data into **train data** and **test data**;
 
@@ -277,12 +299,15 @@ inTrain <- createDataPartition(house_data$price, p = 0.5, list = F)
 house_train_data = house_data[inTrain,]
 house_test_data = house_data[-inTrain,]
 ```
+\
 
-- define the **features** and the **output**
+- define the **features** and the **output**;
+
 ``` {r}
 my_features <- c("bedrooms", "sqft_living")
 my_output <- "price"
 ```
+\
 
 - construct **feature matrix** and **output matrix**; initialize the weights, step size and tolerance;
 
@@ -293,6 +318,7 @@ initial_weights = c(0, 0, 0)
 step_size = 0.01
 tolerance = 1e-5
 ```
+\
 
 - run the gradient descent algorithm and find the feature weights;
 
@@ -304,6 +330,7 @@ weights = regression_gradient_descent(feature_matrix,
                                       tolerance)
 weights
 ```
+\
 
 - check with **OLS regressions** in R
 
@@ -351,7 +378,7 @@ grad_f <- function(X, y, b) {
   t(X) %*% (X %*% b - y)
 }
 ```
-
+\
 
 ``` {r}
 gradient_descent <- gdescent(f,
@@ -371,15 +398,17 @@ gradient_descent <- gdescent(f,
 
 - low tolerance -> might take a long time to converge\
 
+\
 
 ### e) Writing the Stochastic Gradient Descent Application
-Stochastic Gradient Descent is used when dealing with large size data (e.g. m = 1e20). Unlike the batch gradient descent who goes through all the cases,
+Stochastic Gradient Descent is used when dealing with large size data (e.g. m = 1e20). Unlike the batch gradient descent which goes through all the cases,
 Stochastic Gradient Descent selects randomly from the data set and starts modifying the parameters right away. The process is repeated until there are no
 more entries in the data set.\
 
 Using the algorithm at from f) will take a long time to converge in this case.\
 
-The procedure is repeated by the number of iterations defined.
+The procedure is repeated by the number of iterations defined.\
+\
 
 ``` {r}
 sgd<-function(x, y, betas, iters, lambda)
@@ -442,8 +471,9 @@ always the case (see **5.2** where the plot between fitted values and the residu
 pattern)
 
 Non-linearity **example** for the regression model:\
+\
 <center>
-$y = w_0 + w_1x_1+w_2x_2+...+w_5x_5$
+$y = w_0 + w_1x+w_2x^2+...+w_5x^5$
 </center>
 \
 
@@ -460,16 +490,13 @@ $y = w_0 + w_1x_1+w_2x_2+...+w_5x_5$
 \
 \
 
-``` {r}
-# mean(fit$residuals)
-```
-
 
 ### b) **Residuals have zero mean**
 
 ``` {r}
 # mean(fit$residuals)
 ``` 
+[1] -1.404042e-19
 
 \
 
@@ -481,6 +508,7 @@ of the residuals is 0**" can be tested as below.
 ``` {r}
 # (lmtest::dwtest(fit))$p.value
 ``` 
+[1] 0.3654994
 
 \
 
@@ -549,7 +577,9 @@ which was used previously.
 \
 
 
-### a) ** t value**
+### a) **t value**
+
+\
 = the number of the standard deviations between the estimated coefficient
 from the original value of 0.
 \
@@ -610,7 +640,8 @@ If the **R-Squared** value is **closed to 1** that means **the model doesn't nee
 \
 \
 
-### e) **Adjusted R Square** - the R-square is adjusted based on the complexity of the model. R-squared value goes up if more variables are included, even if the are redundant (don't contribute
+### e) **Adjusted R Square** \
+- the R-square is adjusted based on the complexity of the model. R-squared value goes up if more variables are included, even if the are redundant (don't contribute
 towards explaining the response).
 \
 ```{r}
